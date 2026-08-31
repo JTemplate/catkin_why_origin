@@ -1,1 +1,0 @@
-builtin_interfaces:geometry_msgs:launch:launch_ros:libopencv-dev:libpcl-all-dev:pcl_conversions:rclcpp:robot_state_publisher:sensor_msgs:std_msgs:tf2_ros:visualization_msgs

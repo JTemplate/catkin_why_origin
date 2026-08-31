@@ -30,6 +30,18 @@ ament_target_dependencies(SensorFusion
   rclcpp message_filters ros_plc std_msgs sensor_msgs visualization_msgs
 )
 
+# This package intentionally uses the vendored Eigen copy in src/Eigen.  The
+# old Eigen headers trigger compatibility warnings with modern GCC (enum to
+# bool conversions, deprecated implicit copies, and indentation diagnostics),
+# while the application code itself is warning-clean.  Keep the warnings
+# enabled for this target and suppress only these known third-party-header
+# diagnostics.
+target_compile_options(SensorFusion PRIVATE
+  -Wno-int-in-bool-context
+  -Wno-deprecated-copy
+  -Wno-misleading-indentation
+)
+
 install(TARGETS SensorFusion DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
@@ -42,6 +54,11 @@ if(BUILD_TESTING)
   )
   target_include_directories(sensor_fusion_timestamp_test PRIVATE src)
   ament_target_dependencies(sensor_fusion_timestamp_test rclcpp)
+  target_compile_options(sensor_fusion_timestamp_test PRIVATE
+    -Wno-int-in-bool-context
+    -Wno-deprecated-copy
+    -Wno-misleading-indentation
+  )
 endif()
 
 ament_export_dependencies(rosidl_default_runtime)

@@ -1,9 +1,0 @@
-{
-  "package_name": "ros_plc",
-  "non_idl_tuples": [
-    "/home/jj/catkin_why_origin/src/ros_plc:msg/LidarMsg.msg",
-    "/home/jj/catkin_why_origin/src/ros_plc:msg/LidarMsgArray.msg",
-    "/home/jj/catkin_why_origin/src/ros_plc:msg/RadarMsg.msg",
-    "/home/jj/catkin_why_origin/src/ros_plc:msg/RadarMsgArray.msg"
-  ]
-}

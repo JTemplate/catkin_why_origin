@@ -1,1 +1,0 @@
-/home/jj/catkin_why_origin/build_ros2/ros_plc/ament_cmake_python/ros_plc/ros_plc.egg-info/top_level.txt

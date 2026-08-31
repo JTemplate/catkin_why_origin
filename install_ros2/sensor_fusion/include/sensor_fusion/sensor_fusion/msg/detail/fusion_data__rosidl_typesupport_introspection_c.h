@@ -1,1 +1,0 @@
-/home/jj/catkin_why_origin/build_ros2/sensor_fusion/rosidl_typesupport_introspection_c/sensor_fusion/msg/detail/fusion_data__rosidl_typesupport_introspection_c.h

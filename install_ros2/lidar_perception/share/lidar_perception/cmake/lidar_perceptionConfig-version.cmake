@@ -1,1 +1,0 @@
-/home/jj/catkin_why_origin/build_ros2/lidar_perception/ament_cmake_core/lidar_perceptionConfig-version.cmake
