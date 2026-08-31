@@ -5,6 +5,10 @@
 #include "interface/measurement_package.h"
 #include "kalmanfilter.h"
 
+bool ShouldProcessLidarFirst(
+    std::int64_t lidar_timestamp,
+    std::int64_t radar_timestamp);
+
 class SensorFusion {
 public:
     SensorFusion();

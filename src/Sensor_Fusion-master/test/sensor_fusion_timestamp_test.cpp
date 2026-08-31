@@ -108,3 +108,54 @@ TEST(KalmanFilterEkf, HandlesNearOriginStateWithoutProducingInvalidValues)
   EXPECT_NEAR(state(2), 1.0, 1e-12);
   EXPECT_NEAR(state(3), -1.0, 1e-12);
 }
+
+TEST(KalmanFilterEkf, HandlesRadarAngleAcrossPiBoundary)
+{
+  KalmanFilter filter;
+
+  Eigen::VectorXd initial_state(4);
+  initial_state << -1.0, 0.01, 0.0, 0.0;
+  filter.Initialization(initial_state);
+
+  filter.SetP(Eigen::MatrixXd::Identity(4, 4));
+  filter.SetR(Eigen::MatrixXd::Identity(3, 3));
+
+  const double pi = std::acos(-1.0);
+
+  Eigen::VectorXd radar_measurement(3);
+  radar_measurement <<
+    std::sqrt(1.0001),
+    -pi + 0.01,
+    0.0;
+
+  filter.EKFUpdate(radar_measurement);
+
+  const Eigen::VectorXd state = filter.GetX();
+
+  ASSERT_EQ(state.size(), 4);
+
+  for (int i = 0; i < state.size(); ++i) {
+    EXPECT_TRUE(std::isfinite(state(i)));
+  }
+
+  EXPECT_LT(std::fabs(state(1)), 0.1);
+  EXPECT_LT(state(0), 0.0);
+}
+
+TEST(SensorFusionTimestamp, OrdersSynchronizedMeasurementsChronologically)
+{
+  EXPECT_TRUE(
+    ShouldProcessLidarFirst(
+      1'000'000'000LL,
+      1'030'000'000LL));
+
+  EXPECT_FALSE(
+    ShouldProcessLidarFirst(
+      1'030'000'000LL,
+      1'000'000'000LL));
+
+  EXPECT_TRUE(
+    ShouldProcessLidarFirst(
+      1'000'000'000LL,
+      1'000'000'000LL));
+}

@@ -173,94 +173,106 @@ void sensorCallback(const ros_plc::msg::RadarMsgArray::ConstSharedPtr & msg,
                
                 // Process the measurement with the existing fuser
                 auto & fuser_data = fuser_map[original_id];
-                if (fuser_data.sensor_fusion.Process(meas_package)) {
-                    markFuserUpdated(fuser_data, current_timestamp);
-                    RCLCPP_INFO(logger, "Radar Data id=%d,x:%f,y:%f", original_id,radar_msg.x,radar_msg.y);
-                }
-                
-                //如果radar object当前已经有匹配的激光雷达
-                if(fuser_map[original_id].lidar_id != -1){
-                    int matched_lidar_id = fuser_map[original_id].lidar_id; 
-                    const ros_plc::msg::LidarMsg* matched_lidar_obj = nullptr;
 
-                     // 遍历 lidar_msg 查找匹配的 lidar 对象
-                     for (const auto& lidar_obj : lidar_msg->objects) {
-                         if (lidar_obj.original_id == matched_lidar_id) {
-                             matched_lidar_obj = &lidar_obj;
-                             break;
-                         }
-                     }
-                     if(matched_lidar_obj){
-                        double distance=calculateDistance(radar_msg.x, radar_msg.y, matched_lidar_obj->x, matched_lidar_obj->y);
-                        if(distance<DISTANCE_THRESHOLD){
-                            MeasurementPackage lidar_meas_package;
-                            lidar_meas_package.sensor_type_ = MeasurementPackage::LASER;
-                            lidar_meas_package.raw_measurements_ = Eigen::VectorXd(2);
-                            lidar_meas_package.raw_measurements_ << matched_lidar_obj->x, matched_lidar_obj->y;
-                            lidar_meas_package.timestamp_ = current_timestamp;
+                const ros_plc::msg::LidarMsg* selected_lidar_obj = nullptr;
 
-                            // 对 fuser 执行 Process 操作
-                            if (fuser_data.sensor_fusion.Process(lidar_meas_package)) {
-                                markFuserUpdated(fuser_data, current_timestamp);
-                                RCLCPP_INFO(logger, "ID Matched lidar id=%d,x:%f,y:%f", matched_lidar_id,matched_lidar_obj->x,matched_lidar_obj->y);
-                                ifMatchLidar=true;
-                                MatchLidar_ids.insert(matched_lidar_id);
+                // 优先尝试沿用已经匹配的 LiDAR ID。
+                if (fuser_data.lidar_id != -1) {
+                    for (const auto& lidar_obj : lidar_msg->objects) {
+                        if (lidar_obj.original_id == fuser_data.lidar_id) {
+                            const double matched_distance =
+                                calculateDistance(
+                                    radar_msg.x,
+                                    radar_msg.y,
+                                    lidar_obj.x,
+                                    lidar_obj.y);
+
+                            if (matched_distance < DISTANCE_THRESHOLD) {
+                                selected_lidar_obj = &lidar_obj;
                             }
-                        } else {
-                            RCLCPP_INFO(logger, "not found for id=%d", matched_lidar_id);
-                            if (closest_lidar_id != -1) {
-                               MeasurementPackage lidar_meas_package;
-                               lidar_meas_package.sensor_type_ = MeasurementPackage::LASER;
-                               lidar_meas_package.raw_measurements_ = Eigen::VectorXd(2);
-                               lidar_meas_package.raw_measurements_ << closest_lidar_obj->x, closest_lidar_obj->y;
-                               const auto lidar_timestamp = rclcpp::Time(closest_lidar_obj->timestamp).nanoseconds();
-                               lidar_meas_package.timestamp_ = lidar_timestamp;
-                               if (fuser_data.sensor_fusion.Process(lidar_meas_package)) {
-                                   markFuserUpdated(fuser_data, lidar_timestamp);
-                                   fuser_data.lidar_id=closest_lidar_obj->original_id;
-                                   RCLCPP_WARN(logger, "Change Matched id=%d,x:%f,y:%f", closest_lidar_id,closest_lidar_obj->x,closest_lidar_obj->y);
-                                   ifMatchLidar=true;
-                                   MatchLidar_ids.insert(closest_lidar_obj->original_id);
-                               }
-                            }else {
-                               RCLCPP_WARN(logger, "No closed lidarObject");
-                            }
-                         }
-                    }  else if (closest_lidar_id != -1) {
-                         MeasurementPackage lidar_meas_package;
-                        lidar_meas_package.sensor_type_ = MeasurementPackage::LASER;
-                        lidar_meas_package.raw_measurements_ = Eigen::VectorXd(2);
-                        lidar_meas_package.raw_measurements_ << closest_lidar_obj->x, closest_lidar_obj->y;
-                        const auto lidar_timestamp = rclcpp::Time(closest_lidar_obj->timestamp).nanoseconds();
-                        lidar_meas_package.timestamp_ = lidar_timestamp;
-                        if (fuser_data.sensor_fusion.Process(lidar_meas_package)) {
-                            markFuserUpdated(fuser_data, lidar_timestamp);
-                            fuser_data.lidar_id=closest_lidar_obj->original_id;
-                            RCLCPP_WARN(logger, "Change Matched lidar id=%d,x:%f,y:%f", closest_lidar_id,closest_lidar_obj->x,closest_lidar_obj->y);
-                            ifMatchLidar=true;
-                            MatchLidar_ids.insert(closest_lidar_obj->original_id);
+                            break;
                         }
-                    }  else {
-                        RCLCPP_WARN(logger, "No closed lidarObject");
                     }
-                } else if (closest_lidar_id != -1) {
-                     MeasurementPackage lidar_meas_package;
+                }
+
+                // 原匹配不存在或距离过大时，退回当前最近的 LiDAR。
+                if (selected_lidar_obj == nullptr && closest_lidar_obj != nullptr) {
+                    selected_lidar_obj = closest_lidar_obj;
+                }
+
+                bool radar_processed = false;
+                bool lidar_processed = false;
+
+                if (selected_lidar_obj != nullptr) {
+                    MeasurementPackage lidar_meas_package;
                     lidar_meas_package.sensor_type_ = MeasurementPackage::LASER;
                     lidar_meas_package.raw_measurements_ = Eigen::VectorXd(2);
-                    lidar_meas_package.raw_measurements_ << closest_lidar_obj->x, closest_lidar_obj->y;
-                    const auto lidar_timestamp = rclcpp::Time(closest_lidar_obj->timestamp).nanoseconds();
+                    lidar_meas_package.raw_measurements_
+                        << selected_lidar_obj->x, selected_lidar_obj->y;
+
+                    const auto lidar_timestamp =
+                        rclcpp::Time(selected_lidar_obj->timestamp).nanoseconds();
                     lidar_meas_package.timestamp_ = lidar_timestamp;
 
-                    if (fuser_data.sensor_fusion.Process(lidar_meas_package)) {
-                        markFuserUpdated(fuser_data, lidar_timestamp);
-                        fuser_data.lidar_id=closest_lidar_obj->original_id;
-                        RCLCPP_INFO(logger, "Distance Matched id=%d,x:%f,y:%f", closest_lidar_id,closest_lidar_obj->x,closest_lidar_obj->y);
-                        ifMatchLidar=true;
-                        MatchLidar_ids.insert(closest_lidar_obj->original_id);
+                    // 同一个 fuser 必须按照真实测量时间顺序处理。
+                    if (ShouldProcessLidarFirst(lidar_timestamp, current_timestamp)) {
+                        lidar_processed =
+                            fuser_data.sensor_fusion.Process(lidar_meas_package);
+                        if (lidar_processed) {
+                            markFuserUpdated(fuser_data, lidar_timestamp);
+                        }
+
+                        radar_processed =
+                            fuser_data.sensor_fusion.Process(meas_package);
+                        if (radar_processed) {
+                            markFuserUpdated(fuser_data, current_timestamp);
+                        }
+                    } else {
+                        radar_processed =
+                            fuser_data.sensor_fusion.Process(meas_package);
+                        if (radar_processed) {
+                            markFuserUpdated(fuser_data, current_timestamp);
+                        }
+
+                        lidar_processed =
+                            fuser_data.sensor_fusion.Process(lidar_meas_package);
+                        if (lidar_processed) {
+                            markFuserUpdated(fuser_data, lidar_timestamp);
+                        }
                     }
-                }else {
+
+                    if (lidar_processed) {
+                        fuser_data.lidar_id = selected_lidar_obj->original_id;
+                        ifMatchLidar = true;
+                        MatchLidar_ids.insert(selected_lidar_obj->original_id);
+
+                        RCLCPP_INFO(
+                            logger,
+                            "Matched lidar id=%d,x:%f,y:%f",
+                            selected_lidar_obj->original_id,
+                            selected_lidar_obj->x,
+                            selected_lidar_obj->y);
+                    }
+                } else {
+                    radar_processed =
+                        fuser_data.sensor_fusion.Process(meas_package);
+
+                    if (radar_processed) {
+                        markFuserUpdated(fuser_data, current_timestamp);
+                    }
+
                     RCLCPP_WARN(logger, "No closed lidarObject");
                 }
+
+                if (radar_processed) {
+                    RCLCPP_INFO(
+                        logger,
+                        "Radar Data id=%d,x:%f,y:%f",
+                        original_id,
+                        radar_msg.x,
+                        radar_msg.y);
+                }
+
                  // Access the fusion result
                  Eigen::Vector4d x_out = fuser_map[original_id].sensor_fusion.kf_.GetX();
                  if(ifMatchLidar==true){
@@ -336,32 +348,61 @@ void sensorCallback(const ros_plc::msg::RadarMsgArray::ConstSharedPtr & msg,
                 meas_package.raw_measurements_ << distance,radar_msg.phi,radar_msg.speed;
                 meas_package.timestamp_ = current_timestamp;
 
-                // Process the measurement with the existing fuser            
                 SensorFusion new_fuser;
-                new_fuser.Process(meas_package);
 
-                 // 如果找到对应的激光雷达物体
+                // 如果找到对应的激光雷达物体
                 if (closest_lidar_id != -1) {
-                     MeasurementPackage lidar_meas_package;
+                    MeasurementPackage lidar_meas_package;
                     lidar_meas_package.sensor_type_ = MeasurementPackage::LASER;
                     lidar_meas_package.raw_measurements_ = Eigen::VectorXd(2);
-                    lidar_meas_package.raw_measurements_ << closest_lidar_obj->x, closest_lidar_obj->y;
-                    lidar_meas_package.timestamp_ = rclcpp::Time(closest_lidar_obj->timestamp).nanoseconds();
-                    const bool lidar_processed = new_fuser.Process(lidar_meas_package);
-                    const int lidar_id = lidar_processed ? closest_lidar_obj->original_id : -1;
-                    fuser_map[original_id] = {
-                      new_fuser,
-                      rclcpp::Time(new_fuser.LastTimestamp(), RCL_ROS_TIME),
-                      lidar_id};
-                    if (lidar_processed) {
-                        RCLCPP_INFO(logger, "Creating closed lidarObject id:%d",closest_lidar_obj->original_id);
+                    lidar_meas_package.raw_measurements_
+                        << closest_lidar_obj->x, closest_lidar_obj->y;
+
+                    const auto lidar_timestamp =
+                        rclcpp::Time(closest_lidar_obj->timestamp).nanoseconds();
+                    lidar_meas_package.timestamp_ = lidar_timestamp;
+
+                    bool radar_processed = false;
+                    bool lidar_processed = false;
+
+                    if (ShouldProcessLidarFirst(lidar_timestamp, current_timestamp)) {
+                        lidar_processed = new_fuser.Process(lidar_meas_package);
+                        radar_processed = new_fuser.Process(meas_package);
+                    } else {
+                        radar_processed = new_fuser.Process(meas_package);
+                        lidar_processed = new_fuser.Process(lidar_meas_package);
                     }
-                }else {
-                    RCLCPP_WARN(logger, "No closed lidarObject");
+
+                    const int lidar_id =
+                        lidar_processed ? closest_lidar_obj->original_id : -1;
+
                     fuser_map[original_id] = {
-                      new_fuser,
-                      rclcpp::Time(new_fuser.LastTimestamp(), RCL_ROS_TIME),
-                      -1};
+                        new_fuser,
+                        rclcpp::Time(new_fuser.LastTimestamp(), RCL_ROS_TIME),
+                        lidar_id};
+
+                    if (lidar_processed) {
+                        RCLCPP_INFO(
+                        logger,
+                        "Creating closed lidarObject id:%d",
+                        closest_lidar_obj->original_id);
+                    }
+
+                    if (!radar_processed) {
+                        RCLCPP_WARN(
+                        logger,
+                        "Radar measurement was not processed for new fuser id:%d",
+                        original_id);
+                    }
+                } else {
+                    RCLCPP_WARN(logger, "No closed lidarObject");
+
+                    new_fuser.Process(meas_package);
+
+                    fuser_map[original_id] = {
+                        new_fuser,
+                        rclcpp::Time(new_fuser.LastTimestamp(), RCL_ROS_TIME),
+                        -1};
                 }
             }
             //记录处理更新的id
@@ -396,11 +437,15 @@ void sensorCallback(const ros_plc::msg::RadarMsgArray::ConstSharedPtr & msg,
                      lidar_meas_package.sensor_type_ = MeasurementPackage::LASER;
                      lidar_meas_package.raw_measurements_ = Eigen::VectorXd(2);
                      lidar_meas_package.raw_measurements_ << matched_lidar_obj->x, matched_lidar_obj->y;
-                     lidar_meas_package.timestamp_ = timestamp_ns;
-                     // 对 fuser 执行 Process 操作
+
+                    const auto lidar_timestamp =
+                        rclcpp::Time(matched_lidar_obj->timestamp).nanoseconds();
+                    lidar_meas_package.timestamp_ = lidar_timestamp;
+
+                    // 对 fuser 执行 Process 操作
                     ifMatchLidar_predict = fuser.Process(lidar_meas_package);
                     if (ifMatchLidar_predict) {
-                        markFuserUpdated(it->second, timestamp_ns);
+                        markFuserUpdated(it->second, lidar_timestamp);
                     }
                  } else {
                      fuser.Predict(timestamp_ns);

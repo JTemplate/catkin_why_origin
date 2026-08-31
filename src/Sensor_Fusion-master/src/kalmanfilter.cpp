@@ -94,6 +94,9 @@ void KalmanFilter::EKFUpdate(Eigen::VectorXd z)
 
     Eigen::VectorXd y = z - h;
 
+    y(1) = std::atan2(std::sin(y(1)), std::cos(y(1)));
+
+
     Eigen::MatrixXd Ht = H_.transpose();
     Eigen::MatrixXd S = H_ * P_ * Ht + R_;
     Eigen::MatrixXd Si = S.inverse();
