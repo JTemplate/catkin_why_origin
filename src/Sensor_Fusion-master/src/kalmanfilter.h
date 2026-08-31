@@ -36,7 +36,7 @@ public:
 
 private:
 
-    void CalculateJacobianMatrix();
+    bool CalculateJacobianMatrix();
 
     // flag of initialization
     bool is_initialized_;

@@ -1,5 +1,7 @@
 #include <cstdint>
 
+#include <cmath>
+
 #include <gtest/gtest.h>
 
 #include "sensorfusion.h"
@@ -75,4 +77,34 @@ TEST(SensorFusionInitialization, PreservesNegativeRadarCoordinates)
   EXPECT_NEAR(state(1), -1.9866933, 1e-5);
   EXPECT_NEAR(state(2), 1.9601332, 1e-5);
   EXPECT_NEAR(state(3), -0.3973387, 1e-5);
+}
+
+TEST(KalmanFilterEkf, HandlesNearOriginStateWithoutProducingInvalidValues)
+{
+  KalmanFilter filter;
+
+  Eigen::VectorXd initial_state(4);
+  initial_state << 0.0, 0.0, 1.0, -1.0;
+  filter.Initialization(initial_state);
+
+  filter.SetP(Eigen::MatrixXd::Identity(4, 4));
+  filter.SetR(Eigen::MatrixXd::Identity(3, 3));
+
+  Eigen::VectorXd radar_measurement(3);
+  radar_measurement << 1.0, 0.2, 0.0;
+
+  filter.EKFUpdate(radar_measurement);
+
+  const Eigen::VectorXd state = filter.GetX();
+
+  ASSERT_EQ(state.size(), 4);
+
+  for (int i = 0; i < state.size(); ++i) {
+    EXPECT_TRUE(std::isfinite(state(i)));
+  }
+
+  EXPECT_NEAR(state(0), 0.0, 1e-12);
+  EXPECT_NEAR(state(1), 0.0, 1e-12);
+  EXPECT_NEAR(state(2), 1.0, 1e-12);
+  EXPECT_NEAR(state(3), -1.0, 1e-12);
 }

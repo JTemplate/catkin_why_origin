@@ -9,6 +9,8 @@
  * **/
 #include "kalmanfilter.h"
 #include "iostream"
+#include <cmath>
+
 using namespace std;
 KalmanFilter::KalmanFilter()
 {
@@ -78,53 +80,62 @@ void KalmanFilter::KFUpdate(Eigen::VectorXd z)
 
 void KalmanFilter::EKFUpdate(Eigen::VectorXd z)
 {
-    double rho = sqrt(x_(0)*x_(0) + x_(1)*x_(1));
-    double theta = atan2(x_(1), x_(0));   //atan(y,x)
-    double rho_dot = (x_(0)*x_(2) + x_(1)*x_(3)) / rho;
-    Eigen::VectorXd h = Eigen::VectorXd(3);
-    h << rho, theta, rho_dot;
-    Eigen::VectorXd y = z - h;
+    if (!CalculateJacobianMatrix()) {
+        return;
+    }
 
-    CalculateJacobianMatrix();
+    const double rho = std::sqrt(x_(0) * x_(0) + x_(1) * x_(1));
+    const double theta = std::atan2(x_(1), x_(0));
+    const double rho_dot =
+        (x_(0) * x_(2) + x_(1) * x_(3)) / rho;
+
+    Eigen::VectorXd h(3);
+    h << rho, theta, rho_dot;
+
+    Eigen::VectorXd y = z - h;
 
     Eigen::MatrixXd Ht = H_.transpose();
     Eigen::MatrixXd S = H_ * P_ * Ht + R_;
     Eigen::MatrixXd Si = S.inverse();
-    Eigen::MatrixXd K =  P_ * Ht * Si;
-    x_ = x_ + (K * y);
+    Eigen::MatrixXd K = P_ * Ht * Si;
+
+    x_ = x_ + K * y;
+
     int x_size = x_.size();
     Eigen::MatrixXd I = Eigen::MatrixXd::Identity(x_size, x_size);
     P_ = (I - K * H_) * P_;
 }
+
 
 Eigen::VectorXd KalmanFilter::GetX()
 {
     return x_;
 }
 
-void KalmanFilter::CalculateJacobianMatrix()
+bool KalmanFilter::CalculateJacobianMatrix()
 {
-    Eigen::MatrixXd Hj(3, 4);
+    const double px = x_(0);
+    const double py = x_(1);
+    const double vx = x_(2);
+    const double vy = x_(3);
 
-    // get state parameters
-    float px = x_(0);
-    float py = x_(1);
-    float vx = x_(2);
-    float vy = x_(3);
+    const double c1 = px * px + py * py;
 
-    // pre-compute a set of terms to avoid repeated calculation
-    float c1 = px * px + py * py;
-    float c2 = sqrt(c1);
-    float c3 = (c1 * c2);
-
-    // Check division by zero
-    if(fabs(c1) < 0.0001){
-        H_ = Hj;
-        return;
+    if (c1 < 0.0001) {
+        return false;
     }
 
-    Hj << (px/c2), (py/c2), 0, 0,
-         -(py/c1), (px/c1), 0, 0,
-          py*(vx*py - vy*px)/c3, px*(px*vy - py*vx)/c3, px/c2, py/c2;
+    const double c2 = std::sqrt(c1);
+    const double c3 = c1 * c2;
+
+    Eigen::MatrixXd Hj(3, 4);
+    Hj << (px / c2), (py / c2), 0, 0,
+         -(py / c1), (px / c1), 0, 0,
+         py * (vx * py - vy * px) / c3,
+         px * (px * vy - py * vx) / c3,
+         px / c2,
+         py / c2;
+
     H_ = Hj;
+    return true;
 }
