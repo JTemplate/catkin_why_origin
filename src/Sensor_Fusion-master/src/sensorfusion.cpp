@@ -1,6 +1,7 @@
 #include "sensorfusion.h"
 
 #include <cinttypes>
+#include <cmath>
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -48,14 +49,17 @@ bool SensorFusion::Process(const MeasurementPackage & measurement_pack)
             float rho = measurement_pack.raw_measurements_[0];
             float phi = measurement_pack.raw_measurements_[1];
             float rho_dot = measurement_pack.raw_measurements_[2];
+
             float position_x = rho * cos(phi);
-            if (position_x < 0.0001) {
-            position_x = 0.0001;
+            if (std::fabs(position_x) < 0.0001) {
+                position_x = 0.0001;
             }
+
             float position_y = rho * sin(phi);
-            if (position_y < 0.0001) {
-            position_y = 0.0001;
+            if (std::fabs(position_y) < 0.0001) {
+                position_y = 0.0001;
             }
+
             float velocity_x = rho_dot * cos(phi);
             float velocity_y = rho_dot * sin(phi);
             x << position_x, position_y, velocity_x , velocity_y;
