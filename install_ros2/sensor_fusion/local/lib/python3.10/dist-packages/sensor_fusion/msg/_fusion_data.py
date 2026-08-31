@@ -1,0 +1,1 @@
+/home/jj/catkin_why_origin/build_ros2/sensor_fusion/rosidl_generator_py/sensor_fusion/msg/_fusion_data.py

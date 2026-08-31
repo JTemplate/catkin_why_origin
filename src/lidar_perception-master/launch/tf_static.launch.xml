@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="tf2_ros" exec="static_transform_publisher" name="lidar2car"
+        args="--x 3.285 --y 0.0 --z 1.9 --yaw 0.1 --pitch 0.51 --roll 0.005 --frame-id base_link --child-frame-id velodyne"/>
+</launch>

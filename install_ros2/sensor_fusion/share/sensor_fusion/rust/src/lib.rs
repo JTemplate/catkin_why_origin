@@ -1,0 +1,1 @@
+/home/jj/catkin_why_origin/build_ros2/sensor_fusion/rosidl_generator_rs/sensor_fusion/rust/src/lib.rs

@@ -1,0 +1,13 @@
+<launch>
+  <include file="$(find-pkg-share lidar_perception)/launch/lidar_perception.launch.xml"/>
+  <include file="$(find-pkg-share ros_plc)/launch/StartFilter.launch.xml"/>
+  <include file="$(find-pkg-share sensor_fusion)/launch/sensorfusion.launch.xml"/>
+
+  <node pkg="rviz2" exec="rviz2" name="rviz2" output="screen"
+        args="-d $(find-pkg-share start_all)/config/rviz_conf.rviz">
+    <param name="use_sim_time" value="false"/>
+  </node>
+
+  <node pkg="tf2_ros" exec="static_transform_publisher" name="lidar_renamer"
+        args="--x 0 --y 0 --z 0 --yaw 0 --pitch 0 --roll 0 --frame-id LIDAR_TOP --child-frame-id velodyne"/>
+</launch>

@@ -1,0 +1,2 @@
+set(ros_plc_MESSAGE_FILES "/home/jzh/catkin_why/src/ros_plc/msg/lidarMsg.msg;/home/jzh/catkin_why/src/ros_plc/msg/lidarMsgArray.msg;/home/jzh/catkin_why/src/ros_plc/msg/radarMsg.msg;/home/jzh/catkin_why/src/ros_plc/msg/radarMsgArray.msg")
+set(ros_plc_SERVICE_FILES "")

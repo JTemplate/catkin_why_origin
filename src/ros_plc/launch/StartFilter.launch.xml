@@ -1,0 +1,23 @@
+<launch>
+  <node pkg="ros_plc" exec="ground_cut" name="filter_ground" output="screen">
+    <param name="use_sim_time" value="false"/>
+  </node>
+  <node pkg="ros_plc" exec="x_cut" name="filter_x" output="screen">
+    <param name="use_sim_time" value="false"/>
+  </node>
+  <node pkg="ros_plc" exec="y_cut" name="filter_y" output="screen">
+    <param name="use_sim_time" value="false"/>
+  </node>
+  <node pkg="ros_plc" exec="voxel_grid_filter" name="filter_voxel" output="screen">
+    <param name="use_sim_time" value="false"/>
+  </node>
+  <node pkg="ros_plc" exec="lidarMap" name="lidar_map" output="screen">
+    <param name="use_sim_time" value="false"/>
+  </node>
+  <node pkg="ros_plc" exec="radarMap" name="radar_map" output="screen">
+    <param name="use_sim_time" value="false"/>
+  </node>
+  <node pkg="ros_plc" exec="mmwave_filter" name="mmwave_filter" output="screen">
+    <param name="use_sim_time" value="false"/>
+  </node>
+</launch>

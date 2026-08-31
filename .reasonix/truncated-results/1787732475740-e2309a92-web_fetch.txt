@@ -1,0 +1,436 @@
+https://api.github.com/repos/ros2/rosbag2/contents?ref=humble
+
+[
+  {
+    "name": ".github",
+    "path": ".github",
+    "sha": "3a57513944115584181c2113adb1eaf6b3d3ffed",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/.github?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/.github",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/3a57513944115584181c2113adb1eaf6b3d3ffed",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/.github?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/3a57513944115584181c2113adb1eaf6b3d3ffed",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/.github"
+    }
+  },
+  {
+    "name": ".gitignore",
+    "path": ".gitignore",
+    "sha": "714bd826b05de2eca2cac41531ec9a95dfa94531",
+    "size": 120,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/.gitignore?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/blob/humble/.gitignore",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/blobs/714bd826b05de2eca2cac41531ec9a95dfa94531",
+    "download_url": "https://raw.githubusercontent.com/ros2/rosbag2/humble/.gitignore",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/.gitignore?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/blobs/714bd826b05de2eca2cac41531ec9a95dfa94531",
+      "html": "https://github.com/ros2/rosbag2/blob/humble/.gitignore"
+    }
+  },
+  {
+    "name": "CONTRIBUTING.md",
+    "path": "CONTRIBUTING.md",
+    "sha": "cfba094dace53df09974dc9bf5bb9e3c2c677e97",
+    "size": 915,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/CONTRIBUTING.md?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/blob/humble/CONTRIBUTING.md",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/blobs/cfba094dace53df09974dc9bf5bb9e3c2c677e97",
+    "download_url": "https://raw.githubusercontent.com/ros2/rosbag2/humble/CONTRIBUTING.md",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/CONTRIBUTING.md?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/blobs/cfba094dace53df09974dc9bf5bb9e3c2c677e97",
+      "html": "https://github.com/ros2/rosbag2/blob/humble/CONTRIBUTING.md"
+    }
+  },
+  {
+    "name": "LICENSE",
+    "path": "LICENSE",
+    "sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+    "size": 11358,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/LICENSE?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/blob/humble/LICENSE",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/blobs/d645695673349e3947e8e5ae42332d0ac3164cd7",
+    "download_url": "https://raw.githubusercontent.com/ros2/rosbag2/humble/LICENSE",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/LICENSE?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/blobs/d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "html": "https://github.com/ros2/rosbag2/blob/humble/LICENSE"
+    }
+  },
+  {
+    "name": "NOTICE",
+    "path": "NOTICE",
+    "sha": "d9052f289d997713b46ad48a18c2cbae9e517540",
+    "size": 138,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/NOTICE?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/blob/humble/NOTICE",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/blobs/d9052f289d997713b46ad48a18c2cbae9e517540",
+    "download_url": "https://raw.githubusercontent.com/ros2/rosbag2/humble/NOTICE",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/NOTICE?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/blobs/d9052f289d997713b46ad48a18c2cbae9e517540",
+      "html": "https://github.com/ros2/rosbag2/blob/humble/NOTICE"
+    }
+  },
+  {
+    "name": "README.md",
+    "path": "README.md",
+    "sha": "f2c3b621cf13e1d20aefbcaae630ebf9d9476058",
+    "size": 15875,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/README.md?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/blob/humble/README.md",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/blobs/f2c3b621cf13e1d20aefbcaae630ebf9d9476058",
+    "download_url": "https://raw.githubusercontent.com/ros2/rosbag2/humble/README.md",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/README.md?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/blobs/f2c3b621cf13e1d20aefbcaae630ebf9d9476058",
+      "html": "https://github.com/ros2/rosbag2/blob/humble/README.md"
+    }
+  },
+  {
+    "name": "docs",
+    "path": "docs",
+    "sha": "52c020fe09041318bd987e750b705c5a0231dbea",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/docs?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/docs",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/52c020fe09041318bd987e750b705c5a0231dbea",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/docs?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/52c020fe09041318bd987e750b705c5a0231dbea",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/docs"
+    }
+  },
+  {
+    "name": "mcap_vendor",
+    "path": "mcap_vendor",
+    "sha": "f9f9ec189c98343a621e4336d0569b6ea216eea6",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/mcap_vendor?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/mcap_vendor",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/f9f9ec189c98343a621e4336d0569b6ea216eea6",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/mcap_vendor?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/f9f9ec189c98343a621e4336d0569b6ea216eea6",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/mcap_vendor"
+    }
+  },
+  {
+    "name": "ros2bag",
+    "path": "ros2bag",
+    "sha": "86d85e9482c90bc417e1279f3c744cd37581a188",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/ros2bag?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/ros2bag",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/86d85e9482c90bc417e1279f3c744cd37581a188",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/ros2bag?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/86d85e9482c90bc417e1279f3c744cd37581a188",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/ros2bag"
+    }
+  },
+  {
+    "name": "rosbag2",
+    "path": "rosbag2",
+    "sha": "39cc2f761e2e170aeafaef0d6c0b056af0469e2e",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/39cc2f761e2e170aeafaef0d6c0b056af0469e2e",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/39cc2f761e2e170aeafaef0d6c0b056af0469e2e",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2"
+    }
+  },
+  {
+    "name": "rosbag2_compression",
+    "path": "rosbag2_compression",
+    "sha": "1619f63a557220533f1e35e85e93893a594fa15b",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_compression?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_compression",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/1619f63a557220533f1e35e85e93893a594fa15b",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_compression?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/1619f63a557220533f1e35e85e93893a594fa15b",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_compression"
+    }
+  },
+  {
+    "name": "rosbag2_compression_zstd",
+    "path": "rosbag2_compression_zstd",
+    "sha": "40fc2fca6e12371a3c4e05712dc2e99a85006a57",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_compression_zstd?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_compression_zstd",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/40fc2fca6e12371a3c4e05712dc2e99a85006a57",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_compression_zstd?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/40fc2fca6e12371a3c4e05712dc2e99a85006a57",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_compression_zstd"
+    }
+  },
+  {
+    "name": "rosbag2_cpp",
+    "path": "rosbag2_cpp",
+    "sha": "35fc8eced1e774268e64bbf7116bd746103c6ced",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_cpp?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_cpp",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/35fc8eced1e774268e64bbf7116bd746103c6ced",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_cpp?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/35fc8eced1e774268e64bbf7116bd746103c6ced",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_cpp"
+    }
+  },
+  {
+    "name": "rosbag2_interfaces",
+    "path": "rosbag2_interfaces",
+    "sha": "20e4f7d25a2d03bac96b2bff20583d3bf3e9ca8e",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_interfaces?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_interfaces",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/20e4f7d25a2d03bac96b2bff20583d3bf3e9ca8e",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_interfaces?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/20e4f7d25a2d03bac96b2bff20583d3bf3e9ca8e",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_interfaces"
+    }
+  },
+  {
+    "name": "rosbag2_performance",
+    "path": "rosbag2_performance",
+    "sha": "b1852ec4907d4ff0e335c294319162fba59126eb",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_performance?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_performance",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/b1852ec4907d4ff0e335c294319162fba59126eb",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_performance?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/b1852ec4907d4ff0e335c294319162fba59126eb",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_performance"
+    }
+  },
+  {
+    "name": "rosbag2_py",
+    "path": "rosbag2_py",
+    "sha": "72447991a208e872fa2384c12723570710f5b946",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_py?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_py",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/72447991a208e872fa2384c12723570710f5b946",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_py?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/72447991a208e872fa2384c12723570710f5b946",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_py"
+    }
+  },
+  {
+    "name": "rosbag2_storage",
+    "path": "rosbag2_storage",
+    "sha": "a2a88faf55a21161b5e7bbfff4438acce2c93779",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/a2a88faf55a21161b5e7bbfff4438acce2c93779",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/a2a88faf55a21161b5e7bbfff4438acce2c93779",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage"
+    }
+  },
+  {
+    "name": "rosbag2_storage_default_plugins",
+    "path": "rosbag2_storage_default_plugins",
+    "sha": "361585b09488c150566ea91a3c5e32a23490c3af",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage_default_plugins?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage_default_plugins",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/361585b09488c150566ea91a3c5e32a23490c3af",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage_default_plugins?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/361585b09488c150566ea91a3c5e32a23490c3af",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage_default_plugins"
+    }
+  },
+  {
+    "name": "rosbag2_storage_evaluation",
+    "path": "rosbag2_storage_evaluation",
+    "sha": "75cfdebe581c2d8b1587c79b7453a8d02d25520a",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage_evaluation?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage_evaluation",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/75cfdebe581c2d8b1587c79b7453a8d02d25520a",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage_evaluation?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/75cfdebe581c2d8b1587c79b7453a8d02d25520a",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage_evaluation"
+    }
+  },
+  {
+    "name": "rosbag2_storage_mcap",
+    "path": "rosbag2_storage_mcap",
+    "sha": "4fa364fb65d828c0772402d6c8b07e5337685ce1",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage_mcap?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage_mcap",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/4fa364fb65d828c0772402d6c8b07e5337685ce1",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage_mcap?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/4fa364fb65d828c0772402d6c8b07e5337685ce1",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage_mcap"
+    }
+  },
+  {
+    "name": "rosbag2_storage_mcap_testdata",
+    "path": "rosbag2_storage_mcap_testdata",
+    "sha": "37f35c54173f5b3a5ee6e768002671bee2ddd677",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage_mcap_testdata?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage_mcap_testdata",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/37f35c54173f5b3a5ee6e768002671bee2ddd677",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_storage_mcap_testdata?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/37f35c54173f5b3a5ee6e768002671bee2ddd677",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_storage_mcap_testdata"
+    }
+  },
+  {
+    "name": "rosbag2_test_common",
+    "path": "rosbag2_test_common",
+    "sha": "3c99abfb4e73e4db4526c77d714e95b016286cf1",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_test_common?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_test_common",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/3c99abfb4e73e4db4526c77d714e95b016286cf1",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_test_common?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/3c99abfb4e73e4db4526c77d714e95b016286cf1",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_test_common"
+    }
+  },
+  {
+    "name": "rosbag2_tests",
+    "path": "rosbag2_tests",
+    "sha": "fe5b746ba45f9a457b602c8d0ecf4bcfb698a0ff",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_tests?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_tests",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/fe5b746ba45f9a457b602c8d0ecf4bcfb698a0ff",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_tests?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/fe5b746ba45f9a457b602c8d0ecf4bcfb698a0ff",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_tests"
+    }
+  },
+  {
+    "name": "rosbag2_transport",
+    "path": "rosbag2_transport",
+    "sha": "a916ed318bf7276144f4ce2f620f74a47d2b6b0c",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_transport?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_transport",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/a916ed318bf7276144f4ce2f620f74a47d2b6b0c",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/rosbag2_transport?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/a916ed318bf7276144f4ce2f620f74a47d2b6b0c",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/rosbag2_transport"
+    }
+  },
+  {
+    "name": "shared_queues_vendor",
+    "path": "shared_queues_vendor",
+    "sha": "d234b78c00470c576ff6be4d3528fd3d3f4806eb",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/shared_queues_vendor?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/shared_queues_vendor",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/d234b78c00470c576ff6be4d3528fd3d3f4806eb",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/shared_queues_vendor?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/d234b78c00470c576ff6be4d3528fd3d3f4806eb",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/shared_queues_vendor"
+    }
+  },
+  {
+    "name": "sqlite3_vendor",
+    "path": "sqlite3_vendor",
+    "sha": "52f1e5269989d2ff6cc4d4c23729ffb3e2115c93",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/sqlite3_vendor?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/sqlite3_vendor",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/52f1e5269989d2ff6cc4d4c23729ffb3e2115c93",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/sqlite3_vendor?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/52f1e5269989d2ff6cc4d4c23729ffb3e2115c93",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/sqlite3_vendor"
+    }
+  },
+  {
+    "name": "zstd_vendor",
+    "path": "zstd_vendor",
+    "sha": "a717d65743f9c9c4e179546338e950e4255fd573",
+    "size": 0,
+    "url": "https://api.github.com/repos/ros2/rosbag2/contents/zstd_vendor?ref=humble",
+    "html_url": "https://github.com/ros2/rosbag2/tree/humble/zstd_vendor",
+    "git_url": "https://api.github.com/repos/ros2/rosbag2/git/trees/a717d65743f9c9c4e179546338e950e4255fd573",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/ros2/rosbag2/contents/zstd_vendor?ref=humble",
+      "git": "https://api.github.com/repos/ros2/rosbag2/git/trees/a717d65743f9c9c4e179546338e950e4255fd573",
+      "html": "https://github.com/ros2/rosbag2/tree/humble/zstd_vendor"
+    }
+  }
+]

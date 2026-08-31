@@ -1,0 +1,1 @@
+/home/jj/catkin_why_origin/build_ros2/start_all/ament_cmake_environment_hooks/local_setup.bash

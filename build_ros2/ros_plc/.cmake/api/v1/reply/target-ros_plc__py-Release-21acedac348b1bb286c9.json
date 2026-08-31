@@ -1,0 +1,79 @@
+{
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target"
+		],
+		"files" : 
+		[
+			"/home/jj/catkin_why_origin/build_ros2/ros_plc/ros_plc__py/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 34,
+				"parent" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "ros_plc::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "ros_plc__py::@2f6362147bb25727b525",
+	"name" : "ros_plc__py",
+	"paths" : 
+	{
+		"build" : "ros_plc__py",
+		"source" : "/home/jj/catkin_why_origin/build_ros2/ros_plc/ros_plc__py"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"isGenerated" : true,
+			"path" : "/home/jj/catkin_why_origin/build_ros2/ros_plc/ros_plc__py/CMakeFiles/ros_plc__py",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/home/jj/catkin_why_origin/build_ros2/ros_plc/ros_plc__py/CMakeFiles/ros_plc__py.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/home/jj/catkin_why_origin/build_ros2/ros_plc/rosidl_generator_py/ros_plc/_ros_plc_s.ep.rosidl_typesupport_fastrtps_c.c.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

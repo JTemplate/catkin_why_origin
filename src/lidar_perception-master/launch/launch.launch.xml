@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find-pkg-share lidar_perception)/launch/lidar_perception.launch.xml"/>
+  <include file="$(find-pkg-share lidar_perception)/launch/tf_offline.launch.xml"/>
+</launch>

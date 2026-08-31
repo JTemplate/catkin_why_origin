@@ -1,0 +1,1 @@
+/home/jj/catkin_why_origin/build_ros2/ros_plc/rosidl_generator_py/ros_plc/_ros_plc_s.ep.rosidl_typesupport_introspection_c.c

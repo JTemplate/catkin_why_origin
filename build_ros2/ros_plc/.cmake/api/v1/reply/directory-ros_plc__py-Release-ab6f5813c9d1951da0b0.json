@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "ros_plc__py",
+		"source" : "/home/jj/catkin_why_origin/build_ros2/ros_plc/ros_plc__py"
+	}
+}

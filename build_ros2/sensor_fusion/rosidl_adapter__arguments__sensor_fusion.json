@@ -1,0 +1,7 @@
+{
+  "package_name": "sensor_fusion",
+  "non_idl_tuples": [
+    "/home/jj/catkin_why_origin/src/Sensor_Fusion-master:msg/FusionData.msg",
+    "/home/jj/catkin_why_origin/src/Sensor_Fusion-master:msg/SourceData.msg"
+  ]
+}

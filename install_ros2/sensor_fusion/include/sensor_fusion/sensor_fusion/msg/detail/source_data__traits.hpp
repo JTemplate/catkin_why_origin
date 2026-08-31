@@ -1,0 +1,1 @@
+/home/jj/catkin_why_origin/build_ros2/sensor_fusion/rosidl_generator_cpp/sensor_fusion/msg/detail/source_data__traits.hpp

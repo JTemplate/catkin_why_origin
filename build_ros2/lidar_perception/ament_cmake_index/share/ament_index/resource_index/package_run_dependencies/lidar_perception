@@ -1,0 +1,1 @@
+rclcpp;builtin_interfaces;sensor_msgs;std_msgs;geometry_msgs;visualization_msgs;pcl_conversions;libpcl-all-dev;libopencv-dev;launch;launch_ros;robot_state_publisher;tf2_ros

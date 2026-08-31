@@ -1,0 +1,177 @@
+// generated from rosidl_generator_c/resource/idl__functions.h.em
+// with input from ros_plc:msg/RadarMsg.idl
+// generated code does not contain a copyright notice
+
+#ifndef ROS_PLC__MSG__DETAIL__RADAR_MSG__FUNCTIONS_H_
+#define ROS_PLC__MSG__DETAIL__RADAR_MSG__FUNCTIONS_H_
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include <stdbool.h>
+#include <stdlib.h>
+
+#include "rosidl_runtime_c/visibility_control.h"
+#include "ros_plc/msg/rosidl_generator_c__visibility_control.h"
+
+#include "ros_plc/msg/detail/radar_msg__struct.h"
+
+/// Initialize msg/RadarMsg message.
+/**
+ * If the init function is called twice for the same message without
+ * calling fini inbetween previously allocated memory will be leaked.
+ * \param[in,out] msg The previously allocated message pointer.
+ * Fields without a default value will not be initialized by this function.
+ * You might want to call memset(msg, 0, sizeof(
+ * ros_plc__msg__RadarMsg
+ * )) before or use
+ * ros_plc__msg__RadarMsg__create()
+ * to allocate and initialize the message.
+ * \return true if initialization was successful, otherwise false
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+bool
+ros_plc__msg__RadarMsg__init(ros_plc__msg__RadarMsg * msg);
+
+/// Finalize msg/RadarMsg message.
+/**
+ * \param[in,out] msg The allocated message pointer.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+void
+ros_plc__msg__RadarMsg__fini(ros_plc__msg__RadarMsg * msg);
+
+/// Create msg/RadarMsg message.
+/**
+ * It allocates the memory for the message, sets the memory to zero, and
+ * calls
+ * ros_plc__msg__RadarMsg__init().
+ * \return The pointer to the initialized message if successful,
+ * otherwise NULL
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+ros_plc__msg__RadarMsg *
+ros_plc__msg__RadarMsg__create();
+
+/// Destroy msg/RadarMsg message.
+/**
+ * It calls
+ * ros_plc__msg__RadarMsg__fini()
+ * and frees the memory of the message.
+ * \param[in,out] msg The allocated message pointer.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+void
+ros_plc__msg__RadarMsg__destroy(ros_plc__msg__RadarMsg * msg);
+
+/// Check for msg/RadarMsg message equality.
+/**
+ * \param[in] lhs The message on the left hand size of the equality operator.
+ * \param[in] rhs The message on the right hand size of the equality operator.
+ * \return true if messages are equal, otherwise false.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+bool
+ros_plc__msg__RadarMsg__are_equal(const ros_plc__msg__RadarMsg * lhs, const ros_plc__msg__RadarMsg * rhs);
+
+/// Copy a msg/RadarMsg message.
+/**
+ * This functions performs a deep copy, as opposed to the shallow copy that
+ * plain assignment yields.
+ *
+ * \param[in] input The source message pointer.
+ * \param[out] output The target message pointer, which must
+ *   have been initialized before calling this function.
+ * \return true if successful, or false if either pointer is null
+ *   or memory allocation fails.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+bool
+ros_plc__msg__RadarMsg__copy(
+  const ros_plc__msg__RadarMsg * input,
+  ros_plc__msg__RadarMsg * output);
+
+/// Initialize array of msg/RadarMsg messages.
+/**
+ * It allocates the memory for the number of elements and calls
+ * ros_plc__msg__RadarMsg__init()
+ * for each element of the array.
+ * \param[in,out] array The allocated array pointer.
+ * \param[in] size The size / capacity of the array.
+ * \return true if initialization was successful, otherwise false
+ * If the array pointer is valid and the size is zero it is guaranteed
+ # to return true.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+bool
+ros_plc__msg__RadarMsg__Sequence__init(ros_plc__msg__RadarMsg__Sequence * array, size_t size);
+
+/// Finalize array of msg/RadarMsg messages.
+/**
+ * It calls
+ * ros_plc__msg__RadarMsg__fini()
+ * for each element of the array and frees the memory for the number of
+ * elements.
+ * \param[in,out] array The initialized array pointer.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+void
+ros_plc__msg__RadarMsg__Sequence__fini(ros_plc__msg__RadarMsg__Sequence * array);
+
+/// Create array of msg/RadarMsg messages.
+/**
+ * It allocates the memory for the array and calls
+ * ros_plc__msg__RadarMsg__Sequence__init().
+ * \param[in] size The size / capacity of the array.
+ * \return The pointer to the initialized array if successful, otherwise NULL
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+ros_plc__msg__RadarMsg__Sequence *
+ros_plc__msg__RadarMsg__Sequence__create(size_t size);
+
+/// Destroy array of msg/RadarMsg messages.
+/**
+ * It calls
+ * ros_plc__msg__RadarMsg__Sequence__fini()
+ * on the array,
+ * and frees the memory of the array.
+ * \param[in,out] array The initialized array pointer.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+void
+ros_plc__msg__RadarMsg__Sequence__destroy(ros_plc__msg__RadarMsg__Sequence * array);
+
+/// Check for msg/RadarMsg message array equality.
+/**
+ * \param[in] lhs The message array on the left hand size of the equality operator.
+ * \param[in] rhs The message array on the right hand size of the equality operator.
+ * \return true if message arrays are equal in size and content, otherwise false.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+bool
+ros_plc__msg__RadarMsg__Sequence__are_equal(const ros_plc__msg__RadarMsg__Sequence * lhs, const ros_plc__msg__RadarMsg__Sequence * rhs);
+
+/// Copy an array of msg/RadarMsg messages.
+/**
+ * This functions performs a deep copy, as opposed to the shallow copy that
+ * plain assignment yields.
+ *
+ * \param[in] input The source array pointer.
+ * \param[out] output The target array pointer, which must
+ *   have been initialized before calling this function.
+ * \return true if successful, or false if either pointer
+ *   is null or memory allocation fails.
+ */
+ROSIDL_GENERATOR_C_PUBLIC_ros_plc
+bool
+ros_plc__msg__RadarMsg__Sequence__copy(
+  const ros_plc__msg__RadarMsg__Sequence * input,
+  ros_plc__msg__RadarMsg__Sequence * output);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // ROS_PLC__MSG__DETAIL__RADAR_MSG__FUNCTIONS_H_

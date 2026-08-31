@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="lidar_perception" exec="lidar_perception_node"
+        name="lidar_perception_node" output="screen">
+    <param name="use_sim_time" value="false"/>
+    <param from="$(find-pkg-share lidar_perception)/params/lidar_perception.yaml"/>
+  </node>
+</launch>

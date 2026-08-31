@@ -1,0 +1,23 @@
+-- run_test.py: invoking following command in '/home/jj/catkin_why_origin/build_ros2/sensor_fusion':
+ - /home/jj/catkin_why_origin/build_ros2/sensor_fusion/sensor_fusion_timestamp_test --gtest_output=xml:/home/jj/catkin_why_origin/build_ros2/sensor_fusion/test_results/sensor_fusion/sensor_fusion_timestamp_test.gtest.xml
+
+Running main() from /opt/ros/humble/src/gtest_vendor/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 2 tests from SensorFusionTimestamp
+[ RUN      ] SensorFusionTimestamp.RejectsOutOfOrderMeasurementWithoutMovingTimeBackward
+[WARN] [1788165373.547105516] [sensor_fusion]: Dropping out-of-order measurement: current=1900000000 ns, last=2000000000 ns, lag=100.000 ms
+[       OK ] SensorFusionTimestamp.RejectsOutOfOrderMeasurementWithoutMovingTimeBackward (0 ms)
+[ RUN      ] SensorFusionTimestamp.RejectsOutOfOrderPredictionWithoutThrowing
+[WARN] [1788165373.547138952] [sensor_fusion]: Skipping out-of-order prediction: current=1900000000 ns, last=2000000000 ns, lag=100.000 ms
+[       OK ] SensorFusionTimestamp.RejectsOutOfOrderPredictionWithoutThrowing (0 ms)
+[----------] 2 tests from SensorFusionTimestamp (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 2 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 2 tests.
+
+
+-- run_test.py: return code 0
+-- run_test.py: inject classname prefix into gtest result file '/home/jj/catkin_why_origin/build_ros2/sensor_fusion/test_results/sensor_fusion/sensor_fusion_timestamp_test.gtest.xml'
+-- run_test.py: verify result file '/home/jj/catkin_why_origin/build_ros2/sensor_fusion/test_results/sensor_fusion/sensor_fusion_timestamp_test.gtest.xml'

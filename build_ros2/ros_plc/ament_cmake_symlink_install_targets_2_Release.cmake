@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/jj/catkin_why_origin/build_ros2/ros_plc/rosidl_generator_py/ros_plc/ros_plc_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so" "TARGETS" "ros_plc__rosidl_typesupport_c__pyext" "DESTINATION" "local/lib/python3.10/dist-packages/ros_plc")

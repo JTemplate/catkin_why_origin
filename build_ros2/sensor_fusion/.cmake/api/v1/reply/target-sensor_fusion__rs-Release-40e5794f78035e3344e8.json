@@ -1,0 +1,73 @@
+{
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target"
+		],
+		"files" : 
+		[
+			"/home/jj/catkin_why_origin/build_ros2/sensor_fusion/sensor_fusion__rs/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 35,
+				"parent" : 0
+			}
+		]
+	},
+	"id" : "sensor_fusion__rs::@e37640648debfb7f1e1a",
+	"name" : "sensor_fusion__rs",
+	"paths" : 
+	{
+		"build" : "sensor_fusion__rs",
+		"source" : "/home/jj/catkin_why_origin/build_ros2/sensor_fusion/sensor_fusion__rs"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"isGenerated" : true,
+			"path" : "/home/jj/catkin_why_origin/build_ros2/sensor_fusion/sensor_fusion__rs/CMakeFiles/sensor_fusion__rs",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/home/jj/catkin_why_origin/build_ros2/sensor_fusion/sensor_fusion__rs/CMakeFiles/sensor_fusion__rs.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/home/jj/catkin_why_origin/build_ros2/sensor_fusion/rosidl_generator_rs/sensor_fusion/rust/src/lib.rs.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

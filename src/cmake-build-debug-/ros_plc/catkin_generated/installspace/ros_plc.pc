@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: ros_plc
+Description: Description of ros_plc
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime

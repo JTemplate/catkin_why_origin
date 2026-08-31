@@ -1,0 +1,25 @@
+# ROS / Catkin 编译产生的文件夹
+build/
+devel/
+install/
+logs/
+
+# Catkin 工具相关
+.catkin_tools/
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 编辑器临时文件
+.vscode/
+.idea/
+*.swp
+*~
+
+# 系统文件
+.DS_Store
+
+# 其他临时文件
+*.bag
+*.log
