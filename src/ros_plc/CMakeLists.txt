@@ -19,6 +19,10 @@ find_package(visualization_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED COMPONENTS common filters)
 find_package(rosidl_default_generators REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_sensor_msgs REQUIRED)
+
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/LidarMsg.msg"
@@ -41,6 +45,14 @@ foreach(target IN LISTS FILTER_NODES)
   target_link_libraries(${target} ${PCL_LIBRARIES})
   ament_target_dependencies(${target} rclcpp sensor_msgs pcl_conversions)
 endforeach()
+
+ament_target_dependencies(
+  mmwave_filter
+  tf2
+  tf2_ros
+  tf2_sensor_msgs
+)
+
 
 set(MESSAGE_NODES radarMap lidarMap)
 foreach(target IN LISTS MESSAGE_NODES)
