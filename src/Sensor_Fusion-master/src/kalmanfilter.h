@@ -2,7 +2,7 @@
  *HITWH606
  *Jack Ju
  *kalman filter header
- ******/ 
+ ******/
 #pragma once
 #include "Eigen/Dense"
 
@@ -13,6 +13,11 @@ public:
     ~KalmanFilter();
     //Vector3d 本质上还是Eigen::Matrix<double,3,1>即三维向量
     void Initialization(Eigen::VectorXd x_in);
+
+    void SetRadarExtrinsic(
+        double translation_x,
+        double translation_y,
+        double yaw);
 
     bool IsInitialized();
 
@@ -34,9 +39,15 @@ public:
 
     Eigen::VectorXd GetX();
 
+    Eigen::MatrixXd GetQ() const;
+
 private:
 
     bool CalculateJacobianMatrix();
+
+    double radar_translation_x_ = 0.0;
+    double radar_translation_y_ = 0.0;
+    double radar_yaw_ = 0.0;
 
     // flag of initialization
     bool is_initialized_;

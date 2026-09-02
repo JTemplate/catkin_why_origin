@@ -8,6 +8,8 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(ros_plc REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -27,7 +29,7 @@ add_executable(SensorFusion
 )
 target_include_directories(SensorFusion PRIVATE src)
 ament_target_dependencies(SensorFusion
-  rclcpp message_filters ros_plc std_msgs sensor_msgs visualization_msgs
+  rclcpp tf2 tf2_ros message_filters ros_plc std_msgs sensor_msgs visualization_msgs
 )
 
 # This package intentionally uses the vendored Eigen copy in src/Eigen.  The
@@ -44,6 +46,7 @@ target_compile_options(SensorFusion PRIVATE
 
 install(TARGETS SensorFusion DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -55,6 +58,31 @@ if(BUILD_TESTING)
   target_include_directories(sensor_fusion_timestamp_test PRIVATE src)
   ament_target_dependencies(sensor_fusion_timestamp_test rclcpp)
   target_compile_options(sensor_fusion_timestamp_test PRIVATE
+    -Wno-int-in-bool-context
+    -Wno-deprecated-copy
+    -Wno-misleading-indentation
+  )
+
+  ament_add_gtest(sensor_fusion_association_test
+    test/sensor_fusion_association_test.cpp
+  )
+  target_include_directories(
+    sensor_fusion_association_test PRIVATE src
+  )
+
+  ament_add_gtest(sensor_fusion_parameters_test
+    test/sensor_fusion_parameters_test.cpp
+    src/sensorfusion.cpp
+    src/kalmanfilter.cpp
+  )
+  target_include_directories(
+    sensor_fusion_parameters_test PRIVATE src
+  )
+  ament_target_dependencies(
+    sensor_fusion_parameters_test rclcpp
+  )
+  target_compile_options(
+    sensor_fusion_parameters_test PRIVATE
     -Wno-int-in-bool-context
     -Wno-deprecated-copy
     -Wno-misleading-indentation

@@ -64,6 +64,15 @@ void KalmanFilter::Prediction()
     P_ = F_ * P_ * Ft + Q_;
     //cout<<P_<<endl;
 }
+void KalmanFilter::SetRadarExtrinsic(
+    double translation_x,
+    double translation_y,
+    double yaw)
+{
+    radar_translation_x_ = translation_x;
+    radar_translation_y_ = translation_y;
+    radar_yaw_ = yaw;
+}
 
 void KalmanFilter::KFUpdate(Eigen::VectorXd z)
 {
@@ -84,18 +93,35 @@ void KalmanFilter::EKFUpdate(Eigen::VectorXd z)
         return;
     }
 
-    const double rho = std::sqrt(x_(0) * x_(0) + x_(1) * x_(1));
-    const double theta = std::atan2(x_(1), x_(0));
+    const double cos_yaw = std::cos(radar_yaw_);
+    const double sin_yaw = std::sin(radar_yaw_);
+
+    // Transform the state from the velodyne frame into the Radar frame.
+    const double dx = x_(0) - radar_translation_x_;
+    const double dy = x_(1) - radar_translation_y_;
+
+    const double px_r = cos_yaw * dx + sin_yaw * dy;
+    const double py_r = -sin_yaw * dx + cos_yaw * dy;
+
+    const double vx_r =
+        cos_yaw * x_(2) + sin_yaw * x_(3);
+    const double vy_r =
+        -sin_yaw * x_(2) + cos_yaw * x_(3);
+
+    const double rho =
+        std::sqrt(px_r * px_r + py_r * py_r);
+    const double theta = std::atan2(py_r, px_r);
     const double rho_dot =
-        (x_(0) * x_(2) + x_(1) * x_(3)) / rho;
+        (px_r * vx_r + py_r * vy_r) / rho;
 
     Eigen::VectorXd h(3);
     h << rho, theta, rho_dot;
 
     Eigen::VectorXd y = z - h;
 
-    y(1) = std::atan2(std::sin(y(1)), std::cos(y(1)));
-
+    y(1) = std::atan2(
+        std::sin(y(1)),
+        std::cos(y(1)));
 
     Eigen::MatrixXd Ht = H_.transpose();
     Eigen::MatrixXd S = H_ * P_ * Ht + R_;
@@ -105,9 +131,12 @@ void KalmanFilter::EKFUpdate(Eigen::VectorXd z)
     x_ = x_ + K * y;
 
     int x_size = x_.size();
-    Eigen::MatrixXd I = Eigen::MatrixXd::Identity(x_size, x_size);
+    Eigen::MatrixXd I =
+        Eigen::MatrixXd::Identity(x_size, x_size);
+
     P_ = (I - K * H_) * P_;
 }
+
 
 
 Eigen::VectorXd KalmanFilter::GetX()
@@ -115,14 +144,28 @@ Eigen::VectorXd KalmanFilter::GetX()
     return x_;
 }
 
+Eigen::MatrixXd KalmanFilter::GetQ() const
+{
+    return Q_;
+}
+
 bool KalmanFilter::CalculateJacobianMatrix()
 {
-    const double px = x_(0);
-    const double py = x_(1);
-    const double vx = x_(2);
-    const double vy = x_(3);
+    const double cos_yaw = std::cos(radar_yaw_);
+    const double sin_yaw = std::sin(radar_yaw_);
 
-    const double c1 = px * px + py * py;
+    const double dx = x_(0) - radar_translation_x_;
+    const double dy = x_(1) - radar_translation_y_;
+
+    const double px_r = cos_yaw * dx + sin_yaw * dy;
+    const double py_r = -sin_yaw * dx + cos_yaw * dy;
+
+    const double vx_r =
+        cos_yaw * x_(2) + sin_yaw * x_(3);
+    const double vy_r =
+        -sin_yaw * x_(2) + cos_yaw * x_(3);
+
+    const double c1 = px_r * px_r + py_r * py_r;
 
     if (c1 < 0.0001) {
         return false;
@@ -131,14 +174,37 @@ bool KalmanFilter::CalculateJacobianMatrix()
     const double c2 = std::sqrt(c1);
     const double c3 = c1 * c2;
 
-    Eigen::MatrixXd Hj(3, 4);
-    Hj << (px / c2), (py / c2), 0, 0,
-         -(py / c1), (px / c1), 0, 0,
-         py * (vx * py - vy * px) / c3,
-         px * (px * vy - py * vx) / c3,
-         px / c2,
-         py / c2;
+    // Standard Radar Jacobian in the Radar coordinate frame.
+    Eigen::MatrixXd Hj_radar(3, 4);
 
-    H_ = Hj;
+    Hj_radar <<
+        px_r / c2,
+        py_r / c2,
+        0,
+        0,
+
+        -py_r / c1,
+        px_r / c1,
+        0,
+        0,
+
+        py_r * (vx_r * py_r - vy_r * px_r) / c3,
+        px_r * (px_r * vy_r - py_r * vx_r) / c3,
+        px_r / c2,
+        py_r / c2;
+
+    // Jacobian of the velodyne-frame state transformed into
+    // the Radar coordinate frame.
+    Eigen::MatrixXd radar_from_velodyne =
+        Eigen::MatrixXd::Zero(4, 4);
+
+    radar_from_velodyne <<
+        cos_yaw,  sin_yaw, 0,        0,
+        -sin_yaw, cos_yaw, 0,        0,
+        0,        0,        cos_yaw,  sin_yaw,
+        0,        0,       -sin_yaw, cos_yaw;
+
+    H_ = Hj_radar * radar_from_velodyne;
+
     return true;
 }
