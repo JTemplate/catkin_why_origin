@@ -1,5 +1,10 @@
 #include <rclcpp/rclcpp.hpp>
 
+#include <deque>
+#include <limits>
+#include <iomanip>
+
+
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/exceptions.h>
@@ -59,6 +64,17 @@ struct RadarExtrinsic {
     double translation_y = 0.0;
     double yaw = 0.0;
 };
+
+constexpr double kObservedMarkerSize = 0.24;
+constexpr double kPredictionMarkerSize = 0.18;
+
+constexpr double kPredictionAlpha = 0.16;
+constexpr double kPredictionVisibleAgeS = 0.70;
+
+constexpr double kTextHeight = 0.14;
+constexpr double kTextZBase = 0.42;
+constexpr double kTextZStep = 0.06;
+
 
 RadarExtrinsic radar_extrinsic;
 
@@ -267,42 +283,11 @@ void sensorCallback(
     visualization_msgs::msg::MarkerArray delete_markers;
     visualization_msgs::msg::MarkerArray delete_markers_text;
 
-    // Clear previous fusion markers.
-    for (int id : previous_marker_ids) {
-        visualization_msgs::msg::Marker delete_marker;
+    std::set<int> current_marker_ids;
+    std::set<int> current_marker_text_ids;
 
-        delete_marker.action =
-            visualization_msgs::msg::Marker::DELETE;
+    // 对当前同步帧执行一次全局 Radar-LiDAR assignment。
 
-        delete_marker.id = id;
-        delete_marker.header.frame_id = "velodyne";
-        delete_marker.ns = "fusion";
-        delete_marker.header.stamp = timestamp_ros;
-
-        delete_markers.markers.push_back(delete_marker);
-    }
-
-    marker_pub->publish(delete_markers);
-    previous_marker_ids.clear();
-
-    // Clear previous fusion text markers.
-    for (int id : previous_marker_text_ids) {
-        visualization_msgs::msg::Marker delete_marker;
-
-        delete_marker.action =
-            visualization_msgs::msg::Marker::DELETE;
-
-        delete_marker.id = id;
-        delete_marker.header.frame_id = "velodyne";
-        delete_marker.ns = "fusion_text";
-        delete_marker.header.stamp = timestamp_ros;
-
-        delete_markers_text.markers.push_back(delete_marker);
-    }
-
-    marker_pub_text->publish(delete_markers_text);
-    previous_marker_text_ids.clear();
-        // 对当前同步帧执行一次全局 Radar-LiDAR assignment。
     std::vector<AssociationObject> radar_objects;
     radar_objects.reserve(msg->objects.size());
 
@@ -375,10 +360,24 @@ void sensorCallback(
             if (assigned_it != assigned_lidar_by_radar.end()) {
                 assigned_lidar_obj = assigned_it->second;
             }
-            bool ifMatchLidar = false;
+           bool ifMatchLidar = false;
+
+            // 当前 Radar 与分配到的 LiDAR 之间的距离。
+            // 放在整个 Radar object 循环作用域，后面的可视化也能使用。
+            double selected_lidar_distance = -1.0;
+
+            if (assigned_lidar_obj != nullptr) {
+                selected_lidar_distance =
+                    calculateDistance(
+                        radar_msg.x,
+                        radar_msg.y,
+                        assigned_lidar_obj->x,
+                        assigned_lidar_obj->y);
+            }
 
             const std::int64_t current_timestamp =
                 rclcpp::Time(radar_msg.timestamp).nanoseconds();
+
 
             // Existing fuser.
             if (fuser_map.find(original_id) !=
@@ -559,12 +558,13 @@ void sensorCallback(
                 marker.pose.position.x = x_out(0);
                 marker.pose.position.y = x_out(1);
                 marker.pose.position.z = 0.0;
+                marker.pose.orientation.w = 1.0;
 
-                marker.scale.x = 0.5;
-                marker.scale.y = 0.5;
-                marker.scale.z = 0.5;
+                marker.scale.x = kObservedMarkerSize;
+                marker.scale.y = kObservedMarkerSize;
+                marker.scale.z = kObservedMarkerSize;
 
-                marker.color.a = 1.0;
+                marker.color.a = 0.95;
 
                 if (ifMatchLidar) {
                     marker.color.r = 0.0;
@@ -577,7 +577,7 @@ void sensorCallback(
                 }
 
                 markers.push_back(marker);
-                previous_marker_ids.insert(original_id);
+                current_marker_ids.insert(original_id);
 
                 // Fusion text marker.
                 visualization_msgs::msg::Marker text_marker;
@@ -596,31 +596,43 @@ void sensorCallback(
 
                 text_marker.pose.position.x = x_out(0);
                 text_marker.pose.position.y = x_out(1);
-                text_marker.pose.position.z = 0.5;
 
-                text_marker.scale.z = 0.1;
-                text_marker.color.a = 1.0;
+                text_marker.pose.position.z =
+                    kTextZBase +
+                    kTextZStep * (original_id % 3);
 
-                if (ifMatchLidar) {
-                    text_marker.color.r = 0.0;
-                    text_marker.color.g = 1.0;
-                    text_marker.color.b = 0.0;
-                } else {
-                    text_marker.color.r = 1.0;
-                    text_marker.color.g = 1.0;
-                    text_marker.color.b = 0.0;
-                }
+                text_marker.pose.orientation.w = 1.0;
+
+                text_marker.scale.z = kTextHeight;
+
+                text_marker.color.r = 1.0;
+                text_marker.color.g = 1.0;
+                text_marker.color.b = 1.0;
+                text_marker.color.a = 0.90;
 
                 std::ostringstream oss;
+                oss << std::fixed << std::setprecision(2);
 
-                oss << "ID: " << original_id << "\n";
-                oss << "X: " << x_out(0)
-                    << ", Y: " << x_out(1);
+                if (ifMatchLidar &&
+                    assigned_lidar_obj != nullptr)
+                {
+                    // F84 RL 0.23
+                    oss << "F" << original_id
+                        << " RL "
+                        << selected_lidar_distance;
+                }
+                else
+                {
+                    // F109 R
+                    oss << "F" << original_id
+                        << " R";
+                }
 
                 text_marker.text = oss.str();
 
                 markers_text.push_back(text_marker);
-                previous_marker_text_ids.insert(original_id);
+                current_marker_text_ids.insert(original_id);
+
 
             } else {
                 // New fuser.
@@ -884,68 +896,94 @@ void sensorCallback(
             marker.pose.position.x = x_out(0);
             marker.pose.position.y = x_out(1);
             marker.pose.position.z = 0.0;
+            marker.pose.orientation.w = 1.0;
 
-            marker.scale.x = 0.5;
-            marker.scale.y = 0.5;
-            marker.scale.z = 0.5;
+            // 距离最后一次真实 measurement 已经过了多久
+            const double prediction_age_s =
+                std::max(
+                    0.0,
+                    (timestamp_ros - it->second.timestamp).seconds());
 
-            marker.color.a = 1.0;
+            if (ifMatchLidar_predict)
+            {
+                // =========================
+                // LiDAR-only
+                // =========================
 
-            if (ifMatchLidar_predict) {
+                marker.scale.x = kObservedMarkerSize;
+                marker.scale.y = kObservedMarkerSize;
+                marker.scale.z = kObservedMarkerSize;
+
                 marker.color.r = 1.0;
                 marker.color.g = 0.0;
                 marker.color.b = 0.0;
-            } else {
-                marker.color.r = 0.0;
-                marker.color.g = 1.0;
-                marker.color.b = 1.0;
-            }
+                marker.color.a = 0.90;
 
-            markers.push_back(marker);
-            previous_marker_ids.insert(original_id);
+                markers.push_back(marker);
+                current_marker_ids.insert(original_id);
 
-            // Prediction / LiDAR-only text marker.
-            visualization_msgs::msg::Marker text_marker;
+                // LiDAR-only 才创建文字。
+                visualization_msgs::msg::Marker text_marker;
 
-            text_marker.header.frame_id = "velodyne";
-            text_marker.header.stamp = timestamp_ros;
-            text_marker.ns = "fusion_text";
-            text_marker.id = original_id;
+                text_marker.header.frame_id = "velodyne";
+                text_marker.header.stamp = timestamp_ros;
+                text_marker.ns = "fusion_text";
+                text_marker.id = original_id;
 
-            text_marker.type =
-                visualization_msgs::msg::Marker::
-                    TEXT_VIEW_FACING;
+                text_marker.type =
+                    visualization_msgs::msg::Marker::
+                        TEXT_VIEW_FACING;
 
-            text_marker.action =
-                visualization_msgs::msg::Marker::ADD;
+                text_marker.action =
+                    visualization_msgs::msg::Marker::ADD;
 
-            text_marker.pose.position.x = x_out(0);
-            text_marker.pose.position.y = x_out(1);
-            text_marker.pose.position.z = 0.5;
+                text_marker.pose.position.x = x_out(0);
+                text_marker.pose.position.y = x_out(1);
 
-            text_marker.scale.z = 0.1;
-            text_marker.color.a = 1.0;
+                text_marker.pose.position.z =
+                    kTextZBase +
+                    kTextZStep * (original_id % 3);
 
-            if (ifMatchLidar_predict) {
+                text_marker.pose.orientation.w = 1.0;
+
+                text_marker.scale.z = kTextHeight;
+
                 text_marker.color.r = 1.0;
-                text_marker.color.g = 0.0;
-                text_marker.color.b = 0.0;
-            } else {
-                text_marker.color.r = 0.0;
                 text_marker.color.g = 1.0;
                 text_marker.color.b = 1.0;
+                text_marker.color.a = 0.90;
+
+                // 例如：F65 L
+                text_marker.text =
+                    "F" +
+                    std::to_string(original_id) +
+                    " L";
+
+                markers_text.push_back(text_marker);
+                current_marker_text_ids.insert(original_id);
             }
+            else if (
+                prediction_age_s <=
+                kPredictionVisibleAgeS)
+            {
+                // =========================
+                // Prediction
+                // =========================
 
-            std::ostringstream oss;
+                marker.scale.x = kPredictionMarkerSize;
+                marker.scale.y = kPredictionMarkerSize;
+                marker.scale.z = kPredictionMarkerSize;
 
-            oss << "ID: " << original_id << "\n";
-            oss << "X: " << x_out(0)
-                << ", Y: " << x_out(1);
+                marker.color.r = 0.55;
+                marker.color.g = 0.55;
+                marker.color.b = 0.55;
+                marker.color.a = kPredictionAlpha;
 
-            text_marker.text = oss.str();
+                markers.push_back(marker);
+                current_marker_ids.insert(original_id);
 
-            markers_text.push_back(text_marker);
-            previous_marker_text_ids.insert(original_id);
+                // Prediction 故意不创建 text_marker。
+            }
 
             ++it;
 
@@ -954,14 +992,71 @@ void sensorCallback(
         }
     }
 
+    // Only delete markers that were visible previously but are absent now.
+    for (int id : previous_marker_ids) {
+        if (current_marker_ids.find(id) == current_marker_ids.end()) {
+            visualization_msgs::msg::Marker delete_marker;
+            delete_marker.header.frame_id = "velodyne";
+            delete_marker.header.stamp = timestamp_ros;
+            delete_marker.ns = "fusion";
+            delete_marker.id = id;
+            delete_marker.action =
+                visualization_msgs::msg::Marker::DELETE;
+            delete_markers.markers.push_back(delete_marker);
+        }
+    }
+
+    for (int id : previous_marker_text_ids) {
+        if (current_marker_text_ids.find(id) ==
+            current_marker_text_ids.end())
+        {
+            visualization_msgs::msg::Marker delete_marker;
+            delete_marker.header.frame_id = "velodyne";
+            delete_marker.header.stamp = timestamp_ros;
+            delete_marker.ns = "fusion_text";
+            delete_marker.id = id;
+            delete_marker.action =
+                visualization_msgs::msg::Marker::DELETE;
+            delete_markers_text.markers.push_back(delete_marker);
+        }
+    }
+
+    previous_marker_ids = current_marker_ids;
+    previous_marker_text_ids = current_marker_text_ids;
+
+    // Publish each MarkerArray once per callback.
     visualization_msgs::msg::MarkerArray marker_array;
     visualization_msgs::msg::MarkerArray marker_array_text;
 
-    marker_array.markers = markers;
-    marker_array_text.markers = markers_text;
+    marker_array.markers.reserve(
+        delete_markers.markers.size() + markers.size());
+
+    marker_array.markers.insert(
+        marker_array.markers.end(),
+        delete_markers.markers.begin(),
+        delete_markers.markers.end());
+
+    marker_array.markers.insert(
+        marker_array.markers.end(),
+        markers.begin(),
+        markers.end());
+
+    marker_array_text.markers.reserve(
+        delete_markers_text.markers.size() + markers_text.size());
+
+    marker_array_text.markers.insert(
+        marker_array_text.markers.end(),
+        delete_markers_text.markers.begin(),
+        delete_markers_text.markers.end());
+
+    marker_array_text.markers.insert(
+        marker_array_text.markers.end(),
+        markers_text.begin(),
+        markers_text.end());
 
     marker_pub->publish(marker_array);
     marker_pub_text->publish(marker_array_text);
+
 }
 
 
@@ -1088,36 +1183,224 @@ int main(int argc, char **argv) {
                     10);
 
             // 订阅目标话题并传入回调函数，时间同步
-            message_filters::Subscriber<
-                ros_plc::msg::RadarMsgArray>
-                radar_sub(
-                    node,
-                    "/radar_objects");
+            using RadarArray = ros_plc::msg::RadarMsgArray;
+using LidarArray = ros_plc::msg::LidarMsgArray;
 
-            message_filters::Subscriber<
-                ros_plc::msg::LidarMsgArray>
-                lidar_sub(
-                    node,
-                    "/lidar_objects");
+using RadarPtr = RadarArray::ConstSharedPtr;
+using LidarPtr = LidarArray::ConstSharedPtr;
 
-            using MySyncPolicy =
-                message_filters::sync_policies::
-                    ApproximateTime<
-                        ros_plc::msg::RadarMsgArray,
-                        ros_plc::msg::LidarMsgArray>;
+std::deque<RadarPtr> radar_queue;
+std::deque<LidarPtr> lidar_queue;
 
-            message_filters::Synchronizer<
-                MySyncPolicy>
-                sync(
-                    MySyncPolicy(10),
-                    radar_sub,
-                    lidar_sub);
+constexpr std::size_t kSyncQueueSize = 20;
 
-            sync.registerCallback(
-                std::bind(
-                    &safeSensorCallback,
-                    std::placeholders::_1,
-                    std::placeholders::_2));
+// 实测 LiDAR - Radar ≈ 35~38 ms，
+// 给到 80 ms 可以覆盖正常抖动。
+constexpr std::int64_t kSyncToleranceNs =
+    80LL * 1000LL * 1000LL;
+
+// 超过 1 秒的向后跳变认为是 bag 重新开始。
+constexpr std::int64_t kBackwardJumpNs =
+    1LL * 1000LL * 1000LL * 1000LL;
+
+std::int64_t last_radar_stamp_ns = 0;
+std::int64_t last_lidar_stamp_ns = 0;
+
+auto get_radar_stamp =
+    [](const RadarPtr & msg) -> std::int64_t
+    {
+        return rclcpp::Time(msg->header.stamp).nanoseconds();
+    };
+
+auto get_lidar_stamp =
+    [](const LidarPtr & msg) -> std::int64_t
+    {
+        return rclcpp::Time(msg->header.stamp).nanoseconds();
+    };
+
+auto reset_sync_state =
+    [&]()
+    {
+        radar_queue.clear();
+        lidar_queue.clear();
+
+        // bag 重播后旧 EKF 状态也不能沿用
+        fuser_map.clear();
+        last_callback_timestamp_ns = 0;
+
+        last_radar_stamp_ns = 0;
+        last_lidar_stamp_ns = 0;
+
+        RCLCPP_WARN(
+            logger,
+            "Detected bag time reset; cleared fusion synchronization state");
+    };
+
+std::function<void()> try_sync;
+
+try_sync =
+    [&]()
+    {
+        while (!radar_queue.empty() &&
+               !lidar_queue.empty())
+        {
+            std::size_t best_radar = 0;
+            std::size_t best_lidar = 0;
+
+            std::int64_t best_diff =
+                std::numeric_limits<std::int64_t>::max();
+
+            // 队列很小，直接寻找全局最近时间对。
+            for (std::size_t r = 0;
+                 r < radar_queue.size();
+                 ++r)
+            {
+                const auto radar_stamp =
+                    get_radar_stamp(radar_queue[r]);
+
+                for (std::size_t l = 0;
+                     l < lidar_queue.size();
+                     ++l)
+                {
+                    const auto lidar_stamp =
+                        get_lidar_stamp(lidar_queue[l]);
+
+                    const auto diff =
+                        std::llabs(
+                            radar_stamp - lidar_stamp);
+
+                    if (diff < best_diff)
+                    {
+                        best_diff = diff;
+                        best_radar = r;
+                        best_lidar = l;
+                    }
+                }
+            }
+
+            if (best_diff <= kSyncToleranceNs)
+            {
+                auto radar_msg =
+                    radar_queue[best_radar];
+
+                auto lidar_msg =
+                    lidar_queue[best_lidar];
+
+                // 已经使用过以及更旧的数据都删除，
+                // 防止一个 measurement 被重复融合。
+                radar_queue.erase(
+                    radar_queue.begin(),
+                    radar_queue.begin() +
+                        static_cast<std::ptrdiff_t>(
+                            best_radar + 1));
+
+                lidar_queue.erase(
+                    lidar_queue.begin(),
+                    lidar_queue.begin() +
+                        static_cast<std::ptrdiff_t>(
+                            best_lidar + 1));
+
+                safeSensorCallback(
+                    radar_msg,
+                    lidar_msg);
+
+                continue;
+            }
+
+            // 当前最老的数据已经不可能和另一侧配对，
+            // 直接丢弃，等待新 measurement。
+            const auto radar_front =
+                get_radar_stamp(radar_queue.front());
+
+            const auto lidar_front =
+                get_lidar_stamp(lidar_queue.front());
+
+            if (radar_front <
+                lidar_front - kSyncToleranceNs)
+            {
+                radar_queue.pop_front();
+                continue;
+            }
+
+            if (lidar_front <
+                radar_front - kSyncToleranceNs)
+            {
+                lidar_queue.pop_front();
+                continue;
+            }
+
+            break;
+        }
+    };
+
+auto radar_sub =
+    node->create_subscription<RadarArray>(
+        "/radar_objects",
+        10,
+        [&](RadarPtr msg)
+        {
+            const auto stamp =
+                get_radar_stamp(msg);
+
+            if (stamp <= 0) {
+                return;
+            }
+
+            if (last_radar_stamp_ns > 0 &&
+                stamp <
+                    last_radar_stamp_ns -
+                    kBackwardJumpNs)
+            {
+                reset_sync_state();
+            }
+
+            last_radar_stamp_ns = stamp;
+
+            radar_queue.push_back(msg);
+
+            if (radar_queue.size() >
+                kSyncQueueSize)
+            {
+                radar_queue.pop_front();
+            }
+
+            try_sync();
+        });
+
+auto lidar_sub =
+    node->create_subscription<LidarArray>(
+        "/lidar_objects",
+        10,
+        [&](LidarPtr msg)
+        {
+            const auto stamp =
+                get_lidar_stamp(msg);
+
+            if (stamp <= 0) {
+                return;
+            }
+
+            if (last_lidar_stamp_ns > 0 &&
+                stamp <
+                    last_lidar_stamp_ns -
+                    kBackwardJumpNs)
+            {
+                reset_sync_state();
+            }
+
+            last_lidar_stamp_ns = stamp;
+
+            lidar_queue.push_back(msg);
+
+            if (lidar_queue.size() >
+                kSyncQueueSize)
+            {
+                lidar_queue.pop_front();
+            }
+
+            try_sync();
+        });
+
 
             rclcpp::executors::SingleThreadedExecutor executor;
 

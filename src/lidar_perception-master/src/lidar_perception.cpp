@@ -1,6 +1,8 @@
 #include "lidar_perception.h"
 #include <algorithm>
+#include <cmath>
 #include <functional>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <utility>
@@ -32,6 +34,12 @@ lidar_perception::lidar_perception(const rclcpp::Node::SharedPtr & node)
         "/lidar_perception/cluster_points", rclcpp::SensorDataQoS());
     pub_pcl_cluster_radar = node_->create_publisher<sensor_msgs::msg::PointCloud2>(
         "/radar_perception/cluster_points", rclcpp::SensorDataQoS());
+    lidar_tracked_objects_pub_ =
+        node_->create_publisher<ros_plc::msg::LidarMsgArray>(
+            "/lidar_perception/tracked_objects", 10);
+    radar_tracked_objects_pub_ =
+        node_->create_publisher<ros_plc::msg::RadarMsgArray>(
+            "/radar_perception/tracked_objects", 10);
 
     max_marker_size_ = 0;
     max_marker_size_radar=0;
@@ -228,16 +236,36 @@ void lidar_perception::PclCallback(sensor_msgs::msg::PointCloud2::ConstSharedPtr
             marker_txt.color.g = 1.0;
             marker_txt.color.b = 1.0;
             marker_txt.color.a = 1.0;
+            ros_plc::msg::LidarMsgArray tracked_array;
+            tracked_array.header = rec->header;
+            tracked_array.header.frame_id = "velodyne";
             for (int i = 0; i < trackerd_num; i++) {
                 marker_txt.pose.position.x = out_sensor_objects->objects[i]->anchor_point[0];
                 marker_txt.pose.position.y = out_sensor_objects->objects[i]->anchor_point[1];
                 marker_txt.pose.position.z = out_sensor_objects->objects[i]->max_height + 0.3;
                 marker_txt.id = i;
+                const double speed = std::sqrt(
+                    X2(out_sensor_objects->objects[i]->velocity[0]) +
+                    X2(out_sensor_objects->objects[i]->velocity[1]));
+
                 marker_txt.text = std::string("id: ") + std::to_string(out_sensor_objects->objects[i]->track_id) + "\n";
-                double speed = sqrt(X2(out_sensor_objects->objects[i]->velocity[0]) + X2(out_sensor_objects->objects[i]->velocity[1]));
                 marker_txt.text += std::string("speed: ") + std::to_string(speed) + " m/s\n";
                 marker_txt.text += std::string("age: ") + std::to_string(static_cast<int>(out_sensor_objects->objects[i]->tracking_time)) + "s\n";
                 marker_array_info.markers.push_back(marker_txt);
+
+                ros_plc::msg::LidarMsg object;
+                object.current_id = out_sensor_objects->objects[i]->track_id;
+                object.original_id = out_sensor_objects->objects[i]->track_id;
+                object.x = static_cast<float>(out_sensor_objects->objects[i]->anchor_point[0]);
+                object.y = static_cast<float>(out_sensor_objects->objects[i]->anchor_point[1]);
+                object.z = static_cast<float>(out_sensor_objects->objects[i]->max_height + 0.3);
+                object.speed = static_cast<float>(speed);
+                object.timestamp = rec->header.stamp;
+                tracked_array.objects.push_back(object);
+            }
+
+            if (!tracked_array.objects.empty()) {
+                lidar_tracked_objects_pub_->publish(tracked_array);
             }
 
             for (int i = 0; i < trackerd_num; i++) {
@@ -490,6 +518,9 @@ void lidar_perception::PclCallback_radar(sensor_msgs::msg::PointCloud2::ConstSha
             marker_txt.color.g = 1.0;
             marker_txt.color.b = 1.0;
             marker_txt.color.a = 1.0;
+            ros_plc::msg::RadarMsgArray tracked_array;
+            tracked_array.header = rec->header;
+            tracked_array.header.frame_id = "velodyne";
             for (int i = 0; i < trackerd_num; i++) {
                 marker_txt.pose.position.x = out_sensor_objects->objects[i]->anchor_point[0];
                 marker_txt.pose.position.y = out_sensor_objects->objects[i]->anchor_point[1];
@@ -499,7 +530,6 @@ void lidar_perception::PclCallback_radar(sensor_msgs::msg::PointCloud2::ConstSha
                 // 找到与当前位置最近的聚类
                 float min_distance = std::numeric_limits<float>::max();
                 int closest_id = -1;
-                std::pair<float, float> closest_coord;
 
                 for (const auto &entry : cluster_avg_coords) {
                     float dist = std::hypot(
@@ -508,14 +538,33 @@ void lidar_perception::PclCallback_radar(sensor_msgs::msg::PointCloud2::ConstSha
                     if (dist < min_distance) {
                         min_distance = dist;
                         closest_id = entry.first;
-                        closest_coord = entry.second;
                     }
                 }
 
+                float radar_speed = 0.0F;
+                const auto velocity_it = cluster_velocity_map.find(closest_id);
+                if (velocity_it != cluster_velocity_map.end()) {
+                    radar_speed = velocity_it->second;
+                }
+
                 marker_txt.text = std::string("id: ") + std::to_string(out_sensor_objects->objects[i]->track_id) + "\n";
-                marker_txt.text += std::string("speed: ") + std::to_string(cluster_velocity_map[closest_id]) + " m/s\n";
+                marker_txt.text += std::string("speed: ") + std::to_string(radar_speed) + " m/s\n";
                 marker_txt.text += std::string("age: ") + std::to_string(static_cast<int>(out_sensor_objects->objects[i]->tracking_time)) + "s\n";
                 marker_array_info.markers.push_back(marker_txt);
+
+                ros_plc::msg::RadarMsg object;
+                object.current_id = out_sensor_objects->objects[i]->track_id;
+                object.original_id = out_sensor_objects->objects[i]->track_id;
+                object.x = static_cast<float>(out_sensor_objects->objects[i]->anchor_point[0]);
+                object.y = static_cast<float>(out_sensor_objects->objects[i]->anchor_point[1]);
+                object.phi = std::atan2(object.y, object.x);
+                object.speed = radar_speed;
+                object.timestamp = rec->header.stamp;
+                tracked_array.objects.push_back(object);
+            }
+
+            if (!tracked_array.objects.empty()) {
+                radar_tracked_objects_pub_->publish(tracked_array);
             }
 
             for (int i = 0; i < trackerd_num; i++) {
