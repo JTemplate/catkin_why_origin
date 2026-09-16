@@ -1,16 +1,10 @@
-#include <chrono>
 #include <cmath>
 #include <map>
 #include <memory>
-#include <sstream>
-#include <string>
 
 #include <rclcpp/rclcpp.hpp>
 #include <ros_plc/msg/radar_msg.hpp>
 #include <ros_plc/msg/radar_msg_array.hpp>
-#include <visualization_msgs/msg/marker_array.hpp>
-
-using namespace std::chrono_literals;
 
 struct RadarObjectInfo {
   float x;
@@ -21,69 +15,90 @@ struct RadarObjectInfo {
   rclcpp::Time timestamp;
 };
 
-class RadarMarkerProcessor : public rclcpp::Node {
+class RadarObjectProcessor : public rclcpp::Node {
 public:
-  RadarMarkerProcessor()
-  : Node("radar_marker_processor_node"), last_message_time_(get_clock()->now()) {
-    publisher_ = create_publisher<ros_plc::msg::RadarMsgArray>("/radar_objects", 10);
-    subscription_ = create_subscription<visualization_msgs::msg::MarkerArray>(
-      "/radar_perception/marker_info", 10,
-      [this](visualization_msgs::msg::MarkerArray::ConstSharedPtr msg) { process(msg); });
-    timer_ = create_wall_timer(500ms, [this]() { publish_empty_if_stale(); });
+  RadarObjectProcessor()
+  : Node("radar_object_processor_node")
+  {
+    publisher_ =
+      create_publisher<ros_plc::msg::RadarMsgArray>(
+        "/radar_objects", 10);
+
+    subscription_ =
+      create_subscription<ros_plc::msg::RadarMsgArray>(
+        "/radar_perception/tracked_objects",
+        10,
+        [this](ros_plc::msg::RadarMsgArray::ConstSharedPtr msg) {
+          process(msg);
+        });
+
+    // Deliberately no wall-clock stale timer:
+    // bag sensor time must not be mixed with wall-clock time.
   }
 
 private:
-  void process(const visualization_msgs::msg::MarkerArray::ConstSharedPtr & marker_array) {
-    if (marker_array->markers.empty()) {
-      RCLCPP_WARN(get_logger(), "Received empty MarkerArray");
+  void process(
+    const ros_plc::msg::RadarMsgArray::ConstSharedPtr & input)
+  {
+    if (input->objects.empty()) {
       return;
     }
-    rclcpp::Time latest(0, 0, RCL_ROS_TIME);
-    for (const auto & marker : marker_array->markers) {
-      if (marker.action == visualization_msgs::msg::Marker::DELETE) {
-        continue;
-      }
-      int id = -1;
-      float speed = 0.0F;
-      std::istringstream input(marker.text);
-      std::string line;
-      while (std::getline(input, line)) {
-        if (line.find("id: ") != std::string::npos) {
-          id = std::stoi(line.substr(line.find(": ") + 2));
-        } else if (line.find("speed: ") != std::string::npos) {
-          speed = std::stof(line.substr(line.find(": ") + 2));
-        }
-      }
+
+    rclcpp::Time latest(input->header.stamp, RCL_ROS_TIME);
+    bool has_object = false;
+
+    for (const auto & object : input->objects) {
+      const int id = object.current_id;
       if (id < 0) {
         continue;
       }
-      const rclcpp::Time timestamp(marker.header.stamp);
-      update(id, marker.pose.position.x, marker.pose.position.y, speed, timestamp);
+
+      rclcpp::Time timestamp(object.timestamp, RCL_ROS_TIME);
+      if (timestamp.nanoseconds() <= 0) {
+        timestamp = rclcpp::Time(input->header.stamp, RCL_ROS_TIME);
+      }
+
+      if (timestamp.nanoseconds() <= 0) {
+        RCLCPP_WARN(
+          get_logger(),
+          "Ignoring Radar tracked object %d with invalid timestamp",
+          id);
+        continue;
+      }
+
+      update(
+        id,
+        object.x,
+        object.y,
+        object.speed,
+        timestamp);
+
       if (timestamp > latest) {
         latest = timestamp;
       }
-    }
-    publish(latest);
-    cleanup(latest);
-    last_message_time_ = get_clock()->now();
-  }
 
-  void publish_empty_if_stale() {
-    const auto current = get_clock()->now();
-    if ((current - last_message_time_).seconds() <= 0.5) {
+      has_object = true;
+    }
+
+    if (!has_object || latest.nanoseconds() <= 0) {
       return;
     }
-    ros_plc::msg::RadarMsgArray empty;
-    empty.header.stamp = current;
-    empty.header.frame_id = "velodyne";
-    publisher_->publish(empty);
-    last_message_time_ = current;
+
+    cleanup(latest);
+    publish(latest);
   }
 
-  void update(int new_id, float x, float y, float speed,
-      const rclcpp::Time & timestamp) {
+  void update(
+    int new_id,
+    float x,
+    float y,
+    float speed,
+    const rclcpp::Time & timestamp)
+  {
+    // Preserve the existing second-stage ID repair behavior.
     for (auto & [unused_id, info] : objects_) {
       (void)unused_id;
+
       if (info.current_id == new_id) {
         info.x = x;
         info.y = y;
@@ -92,38 +107,65 @@ private:
         return;
       }
     }
+
     constexpr float threshold = 1.0F;
     float minimum = threshold;
     RadarObjectInfo * closest = nullptr;
+
     for (auto & [unused_id, info] : objects_) {
       (void)unused_id;
-      const float distance = std::hypot(info.x - x, info.y - y);
+
+      const float distance =
+        std::hypot(
+          info.x - x,
+          info.y - y);
+
       if (distance < minimum) {
         minimum = distance;
         closest = &info;
       }
     }
-    if (closest) {
+
+    if (closest != nullptr) {
       closest->current_id = new_id;
       closest->x = x;
       closest->y = y;
       closest->speed = speed;
       closest->timestamp = timestamp;
-    } else {
-      objects_.emplace(new_id, RadarObjectInfo{x, y, speed, new_id, new_id, timestamp});
+    }
+    else {
+      objects_.emplace(
+        new_id,
+        RadarObjectInfo{
+          x,
+          y,
+          speed,
+          new_id,
+          new_id,
+          timestamp});
     }
   }
 
-  void publish(const rclcpp::Time & timestamp) {
+  void publish(const rclcpp::Time & timestamp)
+  {
     ros_plc::msg::RadarMsgArray array;
+
     array.header.stamp = timestamp;
     array.header.frame_id = "velodyne";
+
     for (const auto & [unused_id, info] : objects_) {
       (void)unused_id;
-      if (std::abs((info.timestamp - timestamp).seconds()) > 1.0) {
+
+      if (
+        std::abs(
+          (info.timestamp - timestamp).seconds()) >
+        1.0)
+      {
         continue;
       }
+
       ros_plc::msg::RadarMsg object;
+
       object.current_id = info.current_id;
       object.original_id = info.original_id;
       object.x = info.x;
@@ -131,33 +173,52 @@ private:
       object.speed = info.speed;
       object.phi = std::atan2(info.y, info.x);
       object.timestamp = info.timestamp;
+
       array.objects.push_back(object);
     }
+
     publisher_->publish(array);
   }
 
-  void cleanup(const rclcpp::Time & latest) {
+  void cleanup(const rclcpp::Time & latest)
+  {
     for (auto it = objects_.begin(); it != objects_.end();) {
-      if ((latest - it->second.timestamp).seconds() > 2.0) {
-        RCLCPP_INFO(get_logger(), "Removing inactive radar object %d",
+      if (
+        (latest - it->second.timestamp).seconds() >
+        2.0)
+      {
+        RCLCPP_INFO(
+          get_logger(),
+          "Removing inactive Radar object %d",
           it->second.original_id);
+
         it = objects_.erase(it);
-      } else {
+      }
+      else {
         ++it;
       }
     }
   }
 
-  rclcpp::Subscription<visualization_msgs::msg::MarkerArray>::SharedPtr subscription_;
-  rclcpp::Publisher<ros_plc::msg::RadarMsgArray>::SharedPtr publisher_;
-  rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Time last_message_time_;
+  rclcpp::Subscription<
+    ros_plc::msg::RadarMsgArray>::SharedPtr
+    subscription_;
+
+  rclcpp::Publisher<
+    ros_plc::msg::RadarMsgArray>::SharedPtr
+    publisher_;
+
   std::map<int, RadarObjectInfo> objects_;
 };
 
-int main(int argc, char ** argv) {
+int main(int argc, char ** argv)
+{
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<RadarMarkerProcessor>());
+
+  rclcpp::spin(
+    std::make_shared<RadarObjectProcessor>());
+
   rclcpp::shutdown();
+
   return 0;
 }

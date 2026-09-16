@@ -1,5 +1,9 @@
 <launch>
-  <node pkg="sensor_fusion" exec="SensorFusion" name="sensor_fusion_node" output="screen">
+  <node pkg="sensor_fusion"
+        exec="SensorFusion"
+        name="sensor_fusion_node"
+        output="screen">
+    <param from="$(find-pkg-share sensor_fusion)/config/sensor_fusion.yaml"/>
     <param name="use_sim_time" value="false"/>
   </node>
 </launch>

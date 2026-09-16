@@ -1,1 +1,0 @@
-/home/jj/catkin_why_origin/build_ros2/ros_plc/rosidl_typesupport_introspection_c/ros_plc/msg/detail/lidar_msg__rosidl_typesupport_introspection_c.h

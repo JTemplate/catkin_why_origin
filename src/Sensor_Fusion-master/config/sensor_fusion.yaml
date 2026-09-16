@@ -1,0 +1,20 @@
+sensor_fusion_node:
+  ros__parameters:
+    association:
+      max_distance_m: 1.0
+
+    fuser:
+      timeout_s: 5.0
+
+    lidar:
+      measurement_variance_x: 0.0225
+      measurement_variance_y: 0.0225
+
+    radar:
+      measurement_variance_range: 0.09
+      measurement_variance_bearing: 0.0009
+      measurement_variance_range_rate: 0.09
+
+    process:
+      acceleration_variance_x: 9.0
+      acceleration_variance_y: 9.0

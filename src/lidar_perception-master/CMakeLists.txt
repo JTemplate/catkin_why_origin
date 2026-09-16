@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(lidar_perception)
 
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
+
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
@@ -8,6 +12,7 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(ros_plc REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -48,7 +53,7 @@ target_include_directories(lidar_perception_node PRIVATE
 )
 target_link_libraries(lidar_perception_node ${PCL_LIBRARIES} ${OpenCV_LIBRARIES})
 ament_target_dependencies(lidar_perception_node
-  rclcpp builtin_interfaces sensor_msgs std_msgs geometry_msgs visualization_msgs pcl_conversions
+  rclcpp ros_plc builtin_interfaces sensor_msgs std_msgs geometry_msgs visualization_msgs pcl_conversions
 )
 
 install(TARGETS lidar_perception_node DESTINATION lib/${PROJECT_NAME})

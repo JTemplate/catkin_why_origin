@@ -1,1 +1,0 @@
-/home/jj/catkin_why_origin/build_ros2/ros_plc/rosidl_generator_cpp/ros_plc/msg/detail/lidar_msg_array__type_support.hpp

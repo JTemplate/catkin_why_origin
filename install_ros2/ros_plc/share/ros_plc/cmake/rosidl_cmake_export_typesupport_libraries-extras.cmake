@@ -1,1 +1,0 @@
-/home/jj/catkin_why_origin/build_ros2/ros_plc/rosidl_cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake

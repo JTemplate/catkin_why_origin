@@ -12,6 +12,7 @@ dbscan::dbscan(const rclcpp::Node::SharedPtr & node)
 
 }
 void dbscan::cluster_vector(const VPointCloud::ConstPtr cloud, std::vector<pcl::PointIndices> &clusters){
+  const size_t min_sample = static_cast<size_t>(min_sample_);
   // prejection to binary image
   img_ = points_to_picture(cloud);
   label_ = cv::Mat::zeros(pic_height_, pic_width_, CV_8UC1);
@@ -22,7 +23,7 @@ void dbscan::cluster_vector(const VPointCloud::ConstPtr cloud, std::vector<pcl::
         continue;
       std::vector<cv::Point> neighbors;
       QueryNeighbors(i, j, neighbors);
-      if (neighbors.size() < min_sample_){
+      if (neighbors.size() < min_sample){
         label_.at<uchar>(i, j) = 255;  // mark as noise or boundary points
       }else {
         num_class_++;
@@ -52,6 +53,7 @@ void dbscan::cluster_vector(const VPointCloud::ConstPtr cloud, std::vector<pcl::
   }
 }
 void dbscan::ExpandCluster(uchar c, const std::vector<cv::Point>& neighbor) {
+  const size_t min_sample = static_cast<size_t>(min_sample_);
   if(neighbor.size() > 0){
     for (const auto& pt: neighbor) {
       if (IsNoise(pt.x, pt.y)){
@@ -60,7 +62,7 @@ void dbscan::ExpandCluster(uchar c, const std::vector<cv::Point>& neighbor) {
           label_.at<uchar>(pt.x, pt.y) = c;        // core points of c
           std::vector<cv::Point> recur_neighbors;
           QueryNeighbors(pt.x, pt.y, recur_neighbors);
-          if (recur_neighbors.size() >= min_sample_)
+          if (recur_neighbors.size() >= min_sample)
               ExpandCluster(c, recur_neighbors);
       }else{
       }

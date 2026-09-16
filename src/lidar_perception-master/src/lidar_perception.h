@@ -2,6 +2,9 @@
 #define LIDAR_PERCEPTION_LIDAR_PERCEPTION_H_
 
 #include <memory>
+#include "ros_plc/msg/lidar_msg_array.hpp"
+#include "ros_plc/msg/radar_msg_array.hpp"
+
 
 #include <builtin_interfaces/msg/time.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -39,6 +42,13 @@ private:
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_track_radar;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_pcl_cluster_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_pcl_cluster_radar;
+  rclcpp::Publisher<
+    ros_plc::msg::LidarMsgArray>::SharedPtr
+    lidar_tracked_objects_pub_;
+
+  rclcpp::Publisher<
+    ros_plc::msg::RadarMsgArray>::SharedPtr
+    radar_tracked_objects_pub_;
 
   int max_marker_size_ = 0;
   int max_marker_size_radar = 0;

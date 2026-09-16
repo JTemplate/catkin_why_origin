@@ -347,6 +347,8 @@ bool ObjectTrack::CheckTrackStaticHypothesis(
 
 bool ObjectTrack::CheckTrackStaticHypothesisByVelocityAngleChange(
     const std::shared_ptr<Object>& new_object, const double time_diff) {
+  (void)new_object;
+  (void)time_diff;
   Eigen::Vector3f previous_velocity =
       history_objects_[history_objects_.size() - 1]->velocity;
   Eigen::Vector3f current_velocity = current_object_->velocity;

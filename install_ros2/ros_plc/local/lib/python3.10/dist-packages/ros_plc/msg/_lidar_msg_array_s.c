@@ -1,1 +1,0 @@
-/home/jj/catkin_why_origin/build_ros2/ros_plc/rosidl_generator_py/ros_plc/msg/_lidar_msg_array_s.c

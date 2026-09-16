@@ -245,10 +245,11 @@ void HmObjectTracker::ConstructTrackedObjects(
     const std::vector<std::shared_ptr<Object>>& objects,
     std::vector<std::shared_ptr<TrackedObject>>* tracked_objects,
     const Eigen::Matrix4d& pose, const TrackerOptions& options) {
-  int num_objects = objects.size();
+  (void)options;
+  const size_t num_objects = objects.size();
   tracked_objects->clear();
   tracked_objects->resize(num_objects);
-  for (int i = 0; i < num_objects; ++i) {
+  for (size_t i = 0; i < num_objects; ++i) {
     std::shared_ptr<Object> obj(new Object());
     obj->clone(*objects[i]);
     (*tracked_objects)[i].reset(new TrackedObject(obj));
@@ -336,6 +337,7 @@ void HmObjectTracker::UpdateAssignedTracks(
     std::vector<std::shared_ptr<TrackedObject>>* new_objects,
     const std::vector<std::pair<int, int>>& assignments,
     const double time_diff) {
+  (void)tracks_predict;
   // Update assigned tracks
   std::vector<ObjectTrackPtr>& tracks = object_tracks_.GetTracks();
   for (size_t i = 0; i < assignments.size(); ++i) {
@@ -379,7 +381,7 @@ void HmObjectTracker::CollectTrackedResults(
   const std::vector<ObjectTrackPtr>& tracks = object_tracks_.GetTracks();
   tracked_objects->resize(tracks.size());
   // std::cout << "maximum = " << config_.collect_consecutive_invisible_maximum << std::endl;
-  int track_number = 0;
+  size_t track_number = 0;
   for (size_t i = 0; i < tracks.size(); ++i) {
     if (tracks[i]->consecutive_invisible_count_ >
         config_.collect_consecutive_invisible_maximum)
@@ -428,7 +430,7 @@ void HmObjectTracker::CollectTrackedResults(
     if(first_time_){
       index_tracked_obj_.resize(track_number);
       drops_.resize(track_number);
-      for(int i=0; i<track_number; i++){
+      for(size_t i=0; i<track_number; i++){
         index_tracked_obj_[i] = (*tracked_objects)[i]->track_id;
         drops_[i].push_back((*tracked_objects)[i]->anchor_point);
         // drops_[i].push_back((*tracked_objects)[i]->center);
@@ -438,7 +440,7 @@ void HmObjectTracker::CollectTrackedResults(
     }else{
       std::vector<std::vector<Eigen::Vector3d>> drops_temp;
       std::vector<int> index_tracked_obj_temp;
-      int i,j;
+      size_t i,j;
       for(i=0; i<track_number; i++){
         for(j=0; j<index_tracked_obj_.size(); j++){
           if((*tracked_objects)[i]->track_id == index_tracked_obj_[j]){
@@ -456,7 +458,7 @@ void HmObjectTracker::CollectTrackedResults(
         }
       }
 
-      for(int i=0; i<track_number; i++){
+      for(size_t i=0; i<track_number; i++){
         (*tracked_objects)[i]->drops = drops_temp[i];
       }
 

@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_targets("TARGET_FILES" "/home/jj/catkin_why_origin/build_ros2/lidar_perception/lidar_perception_node" "TARGETS" "lidar_perception_node" "DESTINATION" "lib/lidar_perception")

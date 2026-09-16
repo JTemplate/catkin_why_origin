@@ -1,1 +1,0 @@
-/home/jj/catkin_why_origin/build_ros2/start_all/ament_cmake_core/start_allConfig-version.cmake

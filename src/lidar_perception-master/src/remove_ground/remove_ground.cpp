@@ -1,5 +1,7 @@
 #include "remove_ground.h"
 
+#include <vector>
+
 namespace remove_ground
 {
 Remove_ground::Remove_ground(const rclcpp::Node::SharedPtr & node)
@@ -185,8 +187,7 @@ VPointCloud::Ptr Remove_ground::GetFilteredPclWithGrid(VPointCloud::Ptr raw_pcl_
 VPointCloud::Ptr Remove_ground::GetFilteredWithNearestNeighborVariance(VPointCloud::Ptr raw_pcl_)
 {
     const size_t pcl_size = raw_pcl_->points.size();
-    size_t obstacle_flag[pcl_size];
-    for(size_t i = 0; i < pcl_size; i++) obstacle_flag[i] = 0;
+    std::vector<size_t> obstacle_flag(pcl_size, 0);
     if(pcl_size > 0)
     {
         for(size_t i = 0; i < pcl_size; i++)
@@ -251,7 +252,6 @@ VPointCloud::Ptr Remove_ground::GetFilteredWithNearestNeighborVariance_new(VPoin
     //step2:建立kdtree，对每个点进行k半径查询，并计算方差,小于特定值的话存进非地面点云指针内
     pcl::KdTreeFLANN<VPoint> kdtree;
     kdtree.setInputCloud (suspect_ground);
-    int num = suspect_ground->points.size();
     for(auto p : suspect_ground->points){
       std::vector<int> pointIdxRadiusSearch;
       std::vector<float> pointRadiusSquaredDistance;
@@ -280,13 +280,12 @@ void Remove_ground::RemoveIsolatedPoints(VPointCloud::Ptr &raw_pcl_)
 {
   if (raw_pcl_->width * raw_pcl_->height > 0) {
     const size_t pcl_size = raw_pcl_->width * raw_pcl_->height;
-    size_t neighbour_count[pcl_size];
-    for (size_t i = 0; i < pcl_size; ++i) {
-      neighbour_count[i] = 0;
-    }
+    std::vector<size_t> neighbour_count(pcl_size, 0);
+    const size_t min_neighbour_count =
+      static_cast<size_t>(min_num_neighbour_points_threshold_);
     for (size_t i = 0; i < pcl_size; ++i) {
       VPoint &p_1 = raw_pcl_->points[i];
-      if (neighbour_count[i] < min_num_neighbour_points_threshold_) {
+      if (neighbour_count[i] < min_neighbour_count) {
         //for (size_t j = pcl_size; j > i; --j) {
         for (size_t j = i + 1; j < pcl_size; ++j) {
           const VPoint &p_2 = raw_pcl_->points[j];
@@ -294,7 +293,7 @@ void Remove_ground::RemoveIsolatedPoints(VPointCloud::Ptr &raw_pcl_)
           if (dis2 < X2(min_dis_neighbour_points_threshold_)) {
             ++neighbour_count[i];
             ++neighbour_count[j];
-            if (neighbour_count[i] >= min_num_neighbour_points_threshold_) {
+            if (neighbour_count[i] >= min_neighbour_count) {
               break;
             }
           }
@@ -302,7 +301,7 @@ void Remove_ground::RemoveIsolatedPoints(VPointCloud::Ptr &raw_pcl_)
       }
     }
     for (size_t i = 0; i < pcl_size; ++i) {
-      if (neighbour_count[i] < min_num_neighbour_points_threshold_) {
+      if (neighbour_count[i] < min_neighbour_count) {
         VPoint &p = raw_pcl_->points[i];
         //if(p.x < 4.0)
         //{
